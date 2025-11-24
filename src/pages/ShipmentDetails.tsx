@@ -20,7 +20,7 @@ const ShipmentDetails = () => {
   const [currentStatus, setCurrentStatus] = useState("En tránsito");
 
   const handleNotifyDelivery = () => {
-    setCurrentStatus("Entregado");
+    navigate(`/delivery/${id}`);
   };
 
   const trackingHistory = [
