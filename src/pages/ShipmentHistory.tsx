@@ -19,7 +19,7 @@ import autoTable from "jspdf-autotable";
 const ShipmentHistory = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -72,7 +72,7 @@ const ShipmentHistory = () => {
 
   const handleReset = () => {
     setSearchTerm("");
-    setStatusFilter("");
+    setStatusFilter("all");
     setDateFilter("");
     setCurrentPage(1);
   };
@@ -105,7 +105,7 @@ const ShipmentHistory = () => {
       shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       shipment.destination.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = !statusFilter || shipment.status === statusFilter;
+    const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -144,7 +144,7 @@ const ShipmentHistory = () => {
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="Entregado">Entregado</SelectItem>
                   <SelectItem value="En tránsito">En tránsito</SelectItem>
                   <SelectItem value="Aduanas">Aduanas</SelectItem>
