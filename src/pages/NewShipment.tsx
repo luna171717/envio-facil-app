@@ -106,7 +106,7 @@ const NewShipment = () => {
   const steps = [
     { number: 1, title: "Detalles del paquete", subtitle: "Información del paquete" },
     { number: 2, title: "Opciones de envío", subtitle: "Opciones de envío" },
-    { number: 3, title: "Revisar y confirmar", subtitle: "Confirmación final" },
+    { number: 3, title: "Revisar y confirmar", subtitle: "Revisar y confirmar" },
   ];
 
   const estimate = calculateEstimate();
