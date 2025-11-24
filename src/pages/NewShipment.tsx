@@ -20,6 +20,7 @@ import { toast } from "@/hooks/use-toast";
 const NewShipment = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
+  const [subStep, setSubStep] = useState(1); // Para navegación dentro del paso 1
 
   // Paso 1: Información del paquete
   const [packageInfo, setPackageInfo] = useState({
@@ -34,7 +35,7 @@ const NewShipment = () => {
     fragile: false,
   });
 
-  // Paso 2: Información del receptor
+  // Paso 1 (continuación): Información del receptor
   const [receiverInfo, setReceiverInfo] = useState({
     name: "",
     phone: "",
@@ -63,7 +64,8 @@ const NewShipment = () => {
   };
 
   const handleNext = () => {
-    if (step === 1) {
+    // Paso 1: Información del paquete (subStep 1)
+    if (step === 1 && subStep === 1) {
       if (!packageInfo.length || !packageInfo.width || !packageInfo.height || !packageInfo.weight) {
         toast({
           title: "Error",
@@ -72,9 +74,12 @@ const NewShipment = () => {
         });
         return;
       }
+      setSubStep(2); // Ir a información del receptor (aún en paso 1)
+      return;
     }
 
-    if (step === 2) {
+    // Paso 1: Información del receptor (subStep 2)
+    if (step === 1 && subStep === 2) {
       if (!receiverInfo.name || !receiverInfo.address || !receiverInfo.city) {
         toast({
           title: "Error",
@@ -83,14 +88,35 @@ const NewShipment = () => {
         });
         return;
       }
+      setStep(2); // Ir al paso 2 (Opciones de envío)
+      setSubStep(1);
+      return;
     }
 
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
+    // Paso 2: Opciones de envío
+    if (step === 2) {
+      setStep(3);
+      return;
+    }
+
+    // Paso 3: Revisar y confirmar - Finalizar
+    if (step === 3) {
       navigate("/shipment-cost", {
         state: { packageInfo, receiverInfo },
       });
+    }
+  };
+
+  const handleBack = () => {
+    if (step === 1 && subStep === 2) {
+      setSubStep(1);
+    } else if (step > 1) {
+      if (step === 2) {
+        setStep(1);
+        setSubStep(2);
+      } else {
+        setStep(step - 1);
+      }
     }
   };
 
@@ -140,7 +166,7 @@ const NewShipment = () => {
           <div className="lg:col-span-2">
             <Card className="bg-white border-gray-200">
               <CardContent className="p-6">
-                {step === 1 && (
+                {step === 1 && subStep === 1 && (
                   <div className="space-y-6">
                     <h2 className="text-lg font-semibold text-gray-900">
                       Información del paquete
@@ -295,7 +321,7 @@ const NewShipment = () => {
                   </div>
                 )}
 
-                {step === 2 && (
+                {step === 1 && subStep === 2 && (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-6">
                       <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -502,6 +528,14 @@ const NewShipment = () => {
                   </div>
                 )}
 
+                {step === 2 && (
+                  <div className="space-y-6">
+                    <h2 className="text-xl font-semibold mb-4">Opciones de Envío</h2>
+                    <p className="text-gray-600">Selecciona las opciones de envío para tu paquete.</p>
+                    {/* Aquí irá el contenido del paso 2 según tu diseño */}
+                  </div>
+                )}
+
                 {step === 3 && (
                   <div className="space-y-6">
                     <h2 className="text-xl font-semibold mb-4">Revisión del Envío</h2>
@@ -570,8 +604,8 @@ const NewShipment = () => {
 
             {/* Action Buttons */}
             <div className="flex justify-between mt-6">
-              {step > 1 && (
-                <Button variant="ghost" onClick={() => setStep(step - 1)} className="text-gray-600">
+              {(step > 1 || (step === 1 && subStep === 2)) && (
+                <Button variant="ghost" onClick={handleBack} className="text-gray-600">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Atrás
                 </Button>
@@ -591,10 +625,10 @@ const NewShipment = () => {
             <Card className="bg-white border-gray-200 sticky top-6">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {step === 1 ? "Resumen de costos" : "Resumen de envío"}
+                  {step === 1 && subStep === 1 ? "Resumen de costos" : "Resumen de envío"}
                 </h3>
 
-                {step === 1 ? (
+                {step === 1 && subStep === 1 ? (
                   <div className="space-y-4">
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex flex-col items-center justify-center text-center min-h-[100px]">
                       <Package className="h-8 w-8 text-orange-600 mb-2" />
