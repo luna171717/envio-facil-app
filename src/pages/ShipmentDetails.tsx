@@ -127,7 +127,111 @@ const ShipmentDetails = () => {
   };
 
   const handlePrint = () => {
-    window.print();
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Detalles del Envío", 105, 20, { align: "center" });
+    
+    // Tracking ID
+    doc.setFillColor(245, 245, 247);
+    doc.rect(20, 30, 170, 20, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("ID de seguimiento", 105, 37, { align: "center" });
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(id || "ST202500123", 105, 45, { align: "center" });
+    
+    // Current Status
+    doc.setFontSize(12);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Estado Actual", 20, 60);
+    
+    autoTable(doc, {
+      startY: 65,
+      head: [['Campo', 'Información']],
+      body: [
+        ['Estado', currentStatus],
+        ['Última actualización', '15 de enero de 2025 - 14:30'],
+        ['Ubicación actual', 'Centro de Distribución de Chicago'],
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [44, 90, 160] },
+    });
+    
+    // Package Information
+    const finalY1 = (doc as any).lastAutoTable.finalY || 95;
+    doc.setFontSize(12);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Información del Paquete", 20, finalY1 + 10);
+    
+    autoTable(doc, {
+      startY: finalY1 + 15,
+      head: [['Campo', 'Valor']],
+      body: [
+        ['Peso', '2.5 lbs'],
+        ['Tipo de paquete', 'Caja estándar'],
+        ['Dimensiones', '12" x 8" x 4"'],
+        ['Valor', '$150.00'],
+        ['Tipo de servicio', 'Entrega urgente'],
+        ['Fecha de entrega prevista', '17 de enero de 2025'],
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [44, 90, 160] },
+    });
+    
+    // Sender Information
+    const finalY2 = (doc as any).lastAutoTable.finalY || 150;
+    doc.setFontSize(12);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Información del Remitente", 20, finalY2 + 10);
+    
+    autoTable(doc, {
+      startY: finalY2 + 15,
+      head: [['Campo', 'Información']],
+      body: [
+        ['Nombre', 'Tech Solutions Inc.'],
+        ['Dirección', '123 Business Ave, New York, NY 10001'],
+        ['Teléfono', '(555) 123-1567'],
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [44, 90, 160] },
+    });
+    
+    // Receiver Information
+    const finalY3 = (doc as any).lastAutoTable.finalY || 190;
+    doc.setFontSize(12);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Información del Receptor", 20, finalY3 + 10);
+    
+    autoTable(doc, {
+      startY: finalY3 + 15,
+      head: [['Campo', 'Información']],
+      body: [
+        ['Nombre', 'John Smith'],
+        ['Dirección', '456 Oak Street, Los Angeles, CA 90210'],
+        ['Teléfono', '(555) 987-6543'],
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [44, 90, 160] },
+    });
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Gracias por usar nuestro servicio de envíos", 105, 280, { align: "center" });
+    
+    // Open PDF in new window for printing
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    const printWindow = window.open(pdfUrl);
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    }
   };
 
   const trackingHistory = [
