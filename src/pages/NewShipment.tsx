@@ -650,7 +650,9 @@ const NewShipment = () => {
                         <span className="text-gray-600">Recargo por peso</span>
                         <span className="text-gray-900">
                           {packageInfo.weight
-                            ? `$${(parseFloat(packageInfo.weight) * 5).toFixed(2)}`
+                            ? parseFloat(packageInfo.weight) > 15
+                              ? `$${((parseFloat(packageInfo.weight) - 15) * 8).toFixed(2)}`
+                              : "$0.00"
                             : "--"}
                         </span>
                       </div>
