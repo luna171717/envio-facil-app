@@ -695,7 +695,13 @@ const NewShipment = () => {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between py-2 border-b border-gray-100">
                         <span className="text-gray-600">Tipo de servicio</span>
-                        <span className="text-gray-900">No seleccionado</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.deliveryPreference === "express" 
+                            ? "Express" 
+                            : receiverInfo.deliveryPreference === "overnight"
+                            ? "Siguiente día"
+                            : "Estándar"}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-100">
                         <span className="text-gray-600">Peso estimado</span>
@@ -705,18 +711,28 @@ const NewShipment = () => {
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-100">
                         <span className="text-gray-600">Distancia</span>
-                        <span className="text-gray-900">--</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.city ? "~850 km" : "--"}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-100">
                         <span className="text-gray-600">Tiempo de entrega</span>
-                        <span className="text-gray-900">--</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.deliveryPreference === "express" 
+                            ? "1-2 días" 
+                            : receiverInfo.deliveryPreference === "overnight"
+                            ? "1 día"
+                            : "3-5 días"}
+                        </span>
                       </div>
                     </div>
 
                     <div className="pt-4 border-t-2 border-gray-200">
                       <div className="flex justify-between items-center mb-1">
                         <span className="font-semibold text-gray-900">Costo estimado</span>
-                        <span className="text-xl font-bold text-gray-900">--</span>
+                        <span className="text-xl font-bold text-gray-900">
+                          {packageInfo.weight && packageInfo.length ? `$${estimate}` : "--"}
+                        </span>
                       </div>
                       <p className="text-xs text-gray-500">
                         El precio final se calcula al finalizar la compra.
