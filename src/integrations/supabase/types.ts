@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      shipments: {
+        Row: {
+          base_cost: number
+          created_at: string
+          delivery_cost: number | null
+          delivery_preference: string
+          destination: string
+          estimated_delivery_date: string | null
+          fragile_charge: number | null
+          id: string
+          insurance_cost: number | null
+          is_fragile: boolean | null
+          origin: string
+          package_description: string | null
+          package_height: number
+          package_length: number
+          package_value: number | null
+          package_weight: number
+          package_width: number
+          recipient_address: string
+          recipient_city: string
+          recipient_country: string
+          recipient_email: string | null
+          recipient_name: string
+          recipient_phone: string | null
+          recipient_state: string
+          recipient_zip: string
+          service_type: string
+          special_instructions: string | null
+          status: string
+          subtotal: number
+          tax: number
+          total_cost: number
+          tracking_id: string
+          updated_at: string
+          user_id: string
+          weight_surcharge: number | null
+        }
+        Insert: {
+          base_cost: number
+          created_at?: string
+          delivery_cost?: number | null
+          delivery_preference: string
+          destination: string
+          estimated_delivery_date?: string | null
+          fragile_charge?: number | null
+          id?: string
+          insurance_cost?: number | null
+          is_fragile?: boolean | null
+          origin: string
+          package_description?: string | null
+          package_height: number
+          package_length: number
+          package_value?: number | null
+          package_weight: number
+          package_width: number
+          recipient_address: string
+          recipient_city: string
+          recipient_country: string
+          recipient_email?: string | null
+          recipient_name: string
+          recipient_phone?: string | null
+          recipient_state: string
+          recipient_zip: string
+          service_type: string
+          special_instructions?: string | null
+          status?: string
+          subtotal: number
+          tax: number
+          total_cost: number
+          tracking_id: string
+          updated_at?: string
+          user_id: string
+          weight_surcharge?: number | null
+        }
+        Update: {
+          base_cost?: number
+          created_at?: string
+          delivery_cost?: number | null
+          delivery_preference?: string
+          destination?: string
+          estimated_delivery_date?: string | null
+          fragile_charge?: number | null
+          id?: string
+          insurance_cost?: number | null
+          is_fragile?: boolean | null
+          origin?: string
+          package_description?: string | null
+          package_height?: number
+          package_length?: number
+          package_value?: number | null
+          package_weight?: number
+          package_width?: number
+          recipient_address?: string
+          recipient_city?: string
+          recipient_country?: string
+          recipient_email?: string | null
+          recipient_name?: string
+          recipient_phone?: string | null
+          recipient_state?: string
+          recipient_zip?: string
+          service_type?: string
+          special_instructions?: string | null
+          status?: string
+          subtotal?: number
+          tax?: number
+          total_cost?: number
+          tracking_id?: string
+          updated_at?: string
+          user_id?: string
+          weight_surcharge?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
