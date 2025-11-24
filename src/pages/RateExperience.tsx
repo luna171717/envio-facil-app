@@ -19,6 +19,7 @@ const RateExperience = () => {
   });
 
   const [comment, setComment] = useState("");
+  const maxChars = 500;
 
   const handleRating = (category: keyof typeof ratings, value: number) => {
     setRatings({ ...ratings, [category]: value });
@@ -59,10 +60,10 @@ const RateExperience = () => {
             className="focus:outline-none transition-transform hover:scale-110"
           >
             <Star
-              className={`h-8 w-8 ${
+              className={`h-6 w-6 ${
                 star <= value
                   ? "fill-yellow-400 text-yellow-400"
-                  : "text-muted-foreground"
+                  : "fill-gray-200 text-gray-200"
               }`}
             />
           </button>
@@ -71,123 +72,117 @@ const RateExperience = () => {
     );
   };
 
-  const shipmentSummary = {
-    trackingId: id || "ENV-2024-001234",
-    deliveryDate: "23 de noviembre, 2024",
-    origin: "Monterrey, NL",
-    destination: "Ciudad de México, CDMX",
-    service: "FedEx Express",
-  };
-
   return (
-    <Layout>
-      <div className="max-w-2xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Califica tu Experiencia</h1>
-          <p className="text-muted-foreground mt-1">
-            Tu opinión nos ayuda a mejorar nuestro servicio
-          </p>
-        </div>
+    <Layout title="Calificar Experiencia">
+      <div className="max-w-xl mx-auto">
+        <Card className="bg-blue-50">
+          <CardContent className="p-8">
+            {/* Header */}
+            <div className="text-center mb-6">
+              <h1 className="text-xl font-bold mb-2">Califica tu experiencia de envío</h1>
+              <p className="text-sm text-gray-600">
+                Tu opinión nos ayuda a mejorar nuestro servicio
+              </p>
+            </div>
 
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Resumen del Envío</h3>
-            <div className="grid md:grid-cols-2 gap-3 text-sm">
-              <div>
-                <p className="text-muted-foreground">Código de seguimiento</p>
-                <p className="font-mono font-medium">{shipmentSummary.trackingId}</p>
+            {/* Shipment Info */}
+            <div className="bg-white rounded-lg p-4 mb-6 text-sm">
+              <div className="flex justify-between mb-1">
+                <span className="text-gray-600">Número de seguimiento:</span>
+                <span className="font-semibold">#{id || "ENV-2025-001234"}</span>
               </div>
-              <div>
-                <p className="text-muted-foreground">Fecha de entrega</p>
-                <p className="font-medium">{shipmentSummary.deliveryDate}</p>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Entregado el:</span>
+                <span className="font-semibold">15 de Enero, 2025</span>
               </div>
-              <div>
-                <p className="text-muted-foreground">Origen</p>
-                <p className="font-medium">{shipmentSummary.origin}</p>
+            </div>
+
+            {/* Overall Rating */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-3 text-center">Calificación general</h3>
+              <div className="flex justify-center mb-2">
+                <RatingStars
+                  value={ratings.overall}
+                  onChange={(val) => handleRating("overall", val)}
+                />
               </div>
-              <div>
-                <p className="text-muted-foreground">Destino</p>
-                <p className="font-medium">{shipmentSummary.destination}</p>
+              <p className="text-center text-sm text-gray-600">
+                {ratings.overall > 0 ? `${ratings.overall} de 5 estrellas` : "Selecciona una calificación"}
+              </p>
+            </div>
+
+            {/* Individual Ratings */}
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Velocidad de entrega</span>
+                <RatingStars
+                  value={ratings.speed}
+                  onChange={(val) => handleRating("speed", val)}
+                />
               </div>
-              <div className="md:col-span-2">
-                <p className="text-muted-foreground">Servicio</p>
-                <p className="font-medium">{shipmentSummary.service}</p>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Comunicación</span>
+                <RatingStars
+                  value={ratings.communication}
+                  onChange={(val) => handleRating("communication", val)}
+                />
               </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Cuidado del paquete</span>
+                <RatingStars
+                  value={ratings.packaging}
+                  onChange={(val) => handleRating("packaging", val)}
+                />
+              </div>
+            </div>
+
+            {/* Comments */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-3">Comentarios adicionales</h3>
+              <Textarea
+                placeholder="Comparte más detalles sobre tu experiencia (opcional)"
+                value={comment}
+                onChange={(e) => {
+                  if (e.target.value.length <= maxChars) {
+                    setComment(e.target.value);
+                  }
+                }}
+                rows={4}
+                className="bg-white resize-none"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {comment.length}/{maxChars} caracteres
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mb-4">
+              <Button
+                variant="outline"
+                onClick={() => navigate("/dashboard")}
+                className="flex-1 bg-white"
+              >
+                Omitir por ahora
+              </Button>
+              <Button
+                onClick={handleSubmit}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
+                Enviar calificación
+              </Button>
+            </div>
+
+            {/* Help Link */}
+            <div className="text-center text-sm text-gray-600">
+              ¿Tienes algún problema con tu envío?{" "}
+              <button className="text-blue-600 hover:text-blue-700 underline">
+                Contáctanos
+              </button>
             </div>
           </CardContent>
         </Card>
-
-        <Card className="border-border">
-          <CardContent className="p-6 space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">Calificación General</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                ¿Cómo calificarías tu experiencia general?
-              </p>
-              <RatingStars
-                value={ratings.overall}
-                onChange={(val) => handleRating("overall", val)}
-              />
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Velocidad de Entrega</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                ¿El paquete llegó en el tiempo esperado?
-              </p>
-              <RatingStars
-                value={ratings.speed}
-                onChange={(val) => handleRating("speed", val)}
-              />
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Comunicación</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                ¿Recibiste actualizaciones oportunas sobre tu envío?
-              </p>
-              <RatingStars
-                value={ratings.communication}
-                onChange={(val) => handleRating("communication", val)}
-              />
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-2">Cuidado del Paquete</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                ¿El paquete llegó en buenas condiciones?
-              </p>
-              <RatingStars
-                value={ratings.packaging}
-                onChange={(val) => handleRating("packaging", val)}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <h3 className="font-semibold mb-2">Comentarios Adicionales</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Cuéntanos más sobre tu experiencia (opcional)
-            </p>
-            <Textarea
-              placeholder="Escribe tus comentarios aquí..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows={4}
-            />
-          </CardContent>
-        </Card>
-
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate("/dashboard")} className="flex-1">
-            Omitir
-          </Button>
-          <Button onClick={handleSubmit} className="flex-1">
-            Enviar Calificación
-          </Button>
-        </div>
       </div>
     </Layout>
   );
