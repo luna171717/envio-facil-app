@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,17 +15,59 @@ import {
 import Layout from "@/components/Layout";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const ShipmentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [currentStatus, setCurrentStatus] = useState("En tránsito");
+  const [shipment, setShipment] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchShipmentDetails();
+  }, [id]);
+
+  const fetchShipmentDetails = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('tracking_id', id)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setShipment(data);
+      } else {
+        toast({
+          title: "Error",
+          description: "No se encontró el envío",
+          variant: "destructive",
+        });
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Error fetching shipment:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo cargar la información del envío",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNotifyDelivery = () => {
     navigate(`/delivery/${id}`);
   };
 
+
   const handleDownloadLabel = () => {
+    if (!shipment) return;
+
     const doc = new jsPDF();
     
     // Title
@@ -41,7 +83,7 @@ const ShipmentDetails = () => {
     doc.text("ID de seguimiento", 105, 37, { align: "center" });
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
-    doc.text(id || "ST202500123", 105, 45, { align: "center" });
+    doc.text(shipment.tracking_id, 105, 45, { align: "center" });
     
     // Current Status
     doc.setFontSize(12);
@@ -52,9 +94,9 @@ const ShipmentDetails = () => {
       startY: 65,
       head: [['Campo', 'Información']],
       body: [
-        ['Estado', currentStatus],
-        ['Última actualización', '15 de enero de 2025 - 14:30'],
-        ['Ubicación actual', 'Centro de Distribución de Chicago'],
+        ['Estado', shipment.status],
+        ['Última actualización', new Date(shipment.updated_at).toLocaleString('es-MX')],
+        ['Destino', shipment.destination],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -70,12 +112,13 @@ const ShipmentDetails = () => {
       startY: finalY1 + 15,
       head: [['Campo', 'Valor']],
       body: [
-        ['Peso', '2.5 lbs'],
-        ['Tipo de paquete', 'Caja estándar'],
-        ['Dimensiones', '12" x 8" x 4"'],
-        ['Valor', '$150.00'],
-        ['Tipo de servicio', 'Entrega urgente'],
-        ['Fecha de entrega prevista', '17 de enero de 2025'],
+        ['Peso', `${shipment.package_weight} kg`],
+        ['Dimensiones', `${shipment.package_length} x ${shipment.package_width} x ${shipment.package_height} cm`],
+        ['Valor', `$${shipment.package_value?.toFixed(2) || '0.00'}`],
+        ['Descripción', shipment.package_description || 'N/A'],
+        ['Frágil', shipment.is_fragile ? 'Sí' : 'No'],
+        ['Tipo de servicio', shipment.service_type],
+        ['Fecha de entrega prevista', shipment.estimated_delivery_date ? new Date(shipment.estimated_delivery_date).toLocaleDateString('es-MX') : 'N/A'],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -91,9 +134,11 @@ const ShipmentDetails = () => {
       startY: finalY2 + 15,
       head: [['Campo', 'Información']],
       body: [
-        ['Nombre', 'Tech Solutions Inc.'],
-        ['Dirección', '123 Business Ave, New York, NY 10001'],
-        ['Teléfono', '(555) 123-1567'],
+        ['Nombre', shipment.recipient_name],
+        ['Dirección', `${shipment.recipient_address}, ${shipment.recipient_city}, ${shipment.recipient_state} ${shipment.recipient_zip}`],
+        ['País', shipment.recipient_country],
+        ['Teléfono', shipment.recipient_phone || 'N/A'],
+        ['Email', shipment.recipient_email || 'N/A'],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -204,18 +249,18 @@ const ShipmentDetails = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold">Estado actual</h2>
-                  <span className={`${currentStatus === "Entregado" ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'} text-xs font-medium px-3 py-1 rounded`}>
-                    {currentStatus}
+                  <span className={`${shipment?.status === "Entregado" ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'} text-xs font-medium px-3 py-1 rounded`}>
+                    {shipment?.status}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-gray-600 mb-1">Última actualización</p>
-                    <p className="font-semibold">15 de enero de 2025 - 14:30</p>
+                    <p className="font-semibold">{shipment ? new Date(shipment.updated_at).toLocaleString('es-MX') : '-'}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 mb-1">Ubicación actual</p>
-                    <p className="font-semibold">Centro de Distribución de Chicago</p>
+                    <p className="text-gray-600 mb-1">Destino</p>
+                    <p className="font-semibold">{shipment?.destination || '-'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -373,10 +418,10 @@ const ShipmentDetails = () => {
                     className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white"
                     size="sm"
                     onClick={handleNotifyDelivery}
-                    disabled={currentStatus === "Entregado"}
+                    disabled={shipment?.status === "Entregado"}
                   >
                     <CheckCircle2 className="mr-2 h-4 w-4" />
-                    {currentStatus === "Entregado" ? "Entrega Notificada" : "Notificar Entrega"}
+                    {shipment?.status === "Entregado" ? "Entrega Notificada" : "Notificar Entrega"}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -405,7 +450,8 @@ const ShipmentDetails = () => {
             </Card>
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </Layout>
   );
 };
