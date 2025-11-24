@@ -223,9 +223,22 @@ const ShipmentDetails = () => {
     doc.setTextColor(100, 100, 100);
     doc.text("Gracias por usar nuestro servicio de envíos", 105, 280, { align: "center" });
     
-    // Auto print the PDF
-    doc.autoPrint();
-    window.open(doc.output('bloburl'), '_blank');
+    // Create hidden iframe for printing
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    
+    const pdfBlob = doc.output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+    
+    iframe.src = pdfUrl;
+    iframe.onload = () => {
+      iframe.contentWindow?.print();
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+        URL.revokeObjectURL(pdfUrl);
+      }, 1000);
+    };
   };
 
   const trackingHistory = [
