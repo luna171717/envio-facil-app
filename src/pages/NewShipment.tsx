@@ -46,6 +46,17 @@ const NewShipment = () => {
     deliveryPreference: "standard",
   });
 
+  const getDeliveryCost = () => {
+    switch (receiverInfo.deliveryPreference) {
+      case "express":
+        return 20.00;
+      case "overnight":
+        return 30.00;
+      default: // standard
+        return 10.00;
+    }
+  };
+
   const calculateEstimate = () => {
     const weight = parseFloat(packageInfo.weight) || 0;
 
@@ -57,7 +68,8 @@ const NewShipment = () => {
       const shippingCost = baseRate + weightCharge;
       const insurance = 15.00;
       const fragileCharge = packageInfo.fragile ? 10.00 : 0;
-      const subtotal = shippingCost + insurance + fragileCharge;
+      const deliveryCost = getDeliveryCost();
+      const subtotal = shippingCost + insurance + fragileCharge + deliveryCost;
       const iva = subtotal * 0.16;
       const total = subtotal + iva;
       return total.toFixed(2);
@@ -477,9 +489,9 @@ const NewShipment = () => {
                               <SelectValue placeholder="Selecciona la velocidad de entrega" />
                             </SelectTrigger>
                             <SelectContent className="bg-white z-50">
-                              <SelectItem value="standard">Estándar (3-5 días)</SelectItem>
-                              <SelectItem value="express">Express (1-2 días)</SelectItem>
-                              <SelectItem value="overnight">Siguiente día</SelectItem>
+                              <SelectItem value="standard">Estándar (3-5 días) - $10.00</SelectItem>
+                              <SelectItem value="express">Express (1-2 días) - $20.00</SelectItem>
+                              <SelectItem value="overnight">Siguiente día - $30.00</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -618,7 +630,8 @@ const NewShipment = () => {
                                 const shippingCost = baseRate + weightCharge;
                                 const insurance = 15.00;
                                 const fragileCharge = packageInfo.fragile ? 10.00 : 0;
-                                const subtotal = shippingCost + insurance + fragileCharge;
+                                const deliveryCost = getDeliveryCost();
+                                const subtotal = shippingCost + insurance + fragileCharge + deliveryCost;
                                 const iva = subtotal * 0.16;
                                 const total = subtotal + iva;
 
@@ -644,6 +657,18 @@ const NewShipment = () => {
                                         <td className="py-3 text-right text-gray-900 font-medium">${fragileCharge.toFixed(2)}</td>
                                       </tr>
                                     )}
+                                    <tr className="border-b border-gray-100">
+                                      <td className="py-3 text-gray-600">Velocidad de entrega ({
+                                        receiverInfo.deliveryPreference === "express" 
+                                          ? "Express" 
+                                          : receiverInfo.deliveryPreference === "overnight"
+                                          ? "Siguiente día"
+                                          : "Estándar"
+                                      })</td>
+                                      <td className="py-3 text-center text-gray-600">1</td>
+                                      <td className="py-3 text-right text-gray-600">${deliveryCost.toFixed(2)}</td>
+                                      <td className="py-3 text-right text-gray-900 font-medium">${deliveryCost.toFixed(2)}</td>
+                                    </tr>
                                     <tr className="border-b border-gray-100">
                                       <td className="py-3 text-gray-600 font-medium">Subtotal</td>
                                       <td className="py-3"></td>
