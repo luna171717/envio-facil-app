@@ -521,61 +521,176 @@ const NewShipment = () => {
 
                 {step === 3 && (
                   <div className="space-y-6">
-                    <h2 className="text-xl font-semibold mb-4">Revisión del Envío</h2>
+                    <div className="mb-6">
+                      <h2 className="text-xl font-semibold text-gray-900 mb-1">Confirmación de Envío</h2>
+                      <p className="text-sm text-gray-600">
+                        Revisa los detalles de tu envío antes de confirmar y generar la guía
+                      </p>
+                    </div>
 
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="font-semibold text-foreground mb-2">
-                          Información del Paquete
-                        </h3>
-                        <div className="bg-muted rounded-lg p-4 space-y-1 text-sm">
-                          <p>
-                            <span className="text-muted-foreground">Dimensiones:</span>{" "}
-                            {packageInfo.length} x {packageInfo.width} x {packageInfo.height} cm
+                    {/* Resumen del Envío */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-gray-900">Resumen del Envío</h3>
+                        <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                          Editar
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                        {/* Origen */}
+                        <div>
+                          <p className="text-xs font-semibold text-gray-500 mb-2">Origen</p>
+                          <p className="text-sm font-medium text-blue-600 mb-1">Juan Pérez</p>
+                          <p className="text-xs text-gray-600">Av. Reforma 123, Col. Centro</p>
+                          <p className="text-xs text-gray-600">Ciudad de México, CDMX 06000</p>
+                          <p className="text-xs text-gray-600">Tel: +52 55 1234 5678</p>
+                        </div>
+
+                        {/* Destino */}
+                        <div>
+                          <p className="text-xs font-semibold text-gray-500 mb-2">Destino</p>
+                          <p className="text-sm font-medium text-blue-600 mb-1">{receiverInfo.name || "María López"}</p>
+                          <p className="text-xs text-gray-600">{receiverInfo.address || "Calle 5 de Mayo 456, Col. Zona Rosa"}</p>
+                          <p className="text-xs text-gray-600">
+                            {receiverInfo.city || "Guadalajara"}, {receiverInfo.state || "JAL"} {receiverInfo.zipCode || "44100"}
                           </p>
-                          <p>
-                            <span className="text-muted-foreground">Peso:</span>{" "}
-                            {packageInfo.weight} {packageInfo.weightUnit}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Descripción:</span>{" "}
-                            {packageInfo.description || "Sin descripción"}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Valor:</span> $
-                            {packageInfo.value || "0"} {packageInfo.currency}
-                          </p>
-                          {packageInfo.fragile && (
-                            <p className="text-warning font-medium">⚠️ Objeto frágil</p>
-                          )}
+                          <p className="text-xs text-gray-600">Tel: {receiverInfo.phone || "+52 33 9876 5432"}</p>
                         </div>
                       </div>
 
-                      <div>
-                        <h3 className="font-semibold text-foreground mb-2">Destinatario</h3>
-                        <div className="bg-muted rounded-lg p-4 space-y-1 text-sm">
-                          <p>
-                            <span className="text-muted-foreground">Nombre:</span>{" "}
-                            {receiverInfo.name}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Teléfono:</span>{" "}
-                            {receiverInfo.phone}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Email:</span>{" "}
-                            {receiverInfo.email}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Dirección:</span>{" "}
-                            {receiverInfo.address}, {receiverInfo.city}, {receiverInfo.state}{" "}
-                            {receiverInfo.zipCode}
-                          </p>
-                          <p>
-                            <span className="text-muted-foreground">Tipo de entrega:</span>{" "}
-                            {receiverInfo.deliveryPreference === "express"
-                              ? "Express"
-                              : "Estándar"}
+                      <div className="border-t border-gray-200 mt-4 pt-4">
+                        <p className="text-xs font-semibold text-gray-500 mb-2">Detalles del Paquete</p>
+                        <div className="grid grid-cols-3 gap-4 text-xs">
+                          <div>
+                            <span className="text-gray-500">Peso:</span>
+                            <span className="ml-2 font-medium">{packageInfo.weight} kg</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Dimensiones:</span>
+                            <span className="ml-2 font-medium">{packageInfo.length}x{packageInfo.width}x{packageInfo.height} cm</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Tipo:</span>
+                            <span className="ml-2 font-medium">{packageInfo.fragile ? "Frágil" : "Estándar"}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Valor:</span>
+                            <span className="ml-2 font-medium">${packageInfo.value || "500.00"} {packageInfo.currency}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Desglose de Costos */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-gray-900 mb-4">Desglose de Costos</h3>
+                      
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 font-medium text-gray-700">Concepto</th>
+                            <th className="text-center py-2 font-medium text-gray-700">Cantidad</th>
+                            <th className="text-right py-2 font-medium text-gray-700">Precio</th>
+                            <th className="text-right py-2 font-medium text-gray-700">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-gray-100">
+                            <td className="py-3 text-gray-600">Envío estándar</td>
+                            <td className="py-3 text-center text-gray-600">1</td>
+                            <td className="py-3 text-right text-gray-600">$85.00</td>
+                            <td className="py-3 text-right text-gray-900 font-medium">$85.00</td>
+                          </tr>
+                          <tr className="border-b border-gray-100">
+                            <td className="py-3 text-gray-600">Seguro de mercancía</td>
+                            <td className="py-3 text-center text-gray-600">1</td>
+                            <td className="py-3 text-right text-gray-600">$15.00</td>
+                            <td className="py-3 text-right text-gray-900 font-medium">$15.00</td>
+                          </tr>
+                          {packageInfo.fragile && (
+                            <tr className="border-b border-gray-100">
+                              <td className="py-3 text-gray-600">Manejo especial</td>
+                              <td className="py-3 text-center text-gray-600">1</td>
+                              <td className="py-3 text-right text-gray-600">$10.00</td>
+                              <td className="py-3 text-right text-gray-900 font-medium">$10.00</td>
+                            </tr>
+                          )}
+                          <tr className="border-b border-gray-100">
+                            <td className="py-3 text-gray-600 font-medium">Subtotal</td>
+                            <td className="py-3"></td>
+                            <td className="py-3"></td>
+                            <td className="py-3 text-right text-gray-900 font-medium">$110.00</td>
+                          </tr>
+                          <tr className="border-b border-gray-100">
+                            <td className="py-3 text-gray-600">IVA (16%)</td>
+                            <td className="py-3"></td>
+                            <td className="py-3"></td>
+                            <td className="py-3 text-right text-gray-900 font-medium">$17.60</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3 text-gray-900 font-bold text-base">Total</td>
+                            <td className="py-3"></td>
+                            <td className="py-3"></td>
+                            <td className="py-3 text-right text-gray-900 font-bold text-base">${estimate}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Método de Pago */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-gray-900 mb-4">Método de Pago</h3>
+                      
+                      <div className="mb-4">
+                        <Label className="text-sm text-gray-700 mb-2 block">Seleccionar método de pago</Label>
+                        <Select defaultValue="origin">
+                          <SelectTrigger className="bg-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white">
+                            <SelectItem value="origin">Pago en origen</SelectItem>
+                            <SelectItem value="destination">Pago en destino</SelectItem>
+                            <SelectItem value="card">Tarjeta de crédito</SelectItem>
+                            <SelectItem value="transfer">Transferencia</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                        <div className="text-xs text-blue-900">
+                          <p className="font-semibold mb-1">Pago en origen seleccionado</p>
+                          <p>El pago se realizará antes del envío. Se requiere comprobante de pago para proceder.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tiempo de Entrega */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <h3 className="font-semibold text-gray-900 mb-4">Tiempo de Entrega</h3>
+                      
+                      <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500 mb-1">Fecha de envío:</p>
+                          <p className="font-medium text-gray-900">15 Ene 2025</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Fecha estimada:</p>
+                          <p className="font-medium text-gray-900">17 Ene 2025</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500 mb-1">Tiempo estimado:</p>
+                          <p className="font-medium text-gray-900">
+                            {receiverInfo.deliveryPreference === "express" 
+                              ? "2-3 días hábiles" 
+                              : receiverInfo.deliveryPreference === "overnight"
+                              ? "1 día hábil"
+                              : "3-5 días hábiles"}
                           </p>
                         </div>
                       </div>
@@ -597,7 +712,7 @@ const NewShipment = () => {
                 onClick={handleNext}
                 className="ml-auto bg-[#2c5aa0] hover:bg-[#234a82]"
               >
-                {step === 3 ? "Calcular Costo" : "Siguiente"}
+                {step === 3 ? "Confirmar Envío" : "Siguiente"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
