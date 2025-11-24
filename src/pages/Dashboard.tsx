@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Package,
   TrendingUp,
@@ -50,10 +51,13 @@ const Dashboard = () => {
 
   const [recentShipments, setRecentShipments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [currentPage]);
 
   const fetchDashboardData = async () => {
     try {
@@ -97,12 +101,25 @@ const Dashboard = () => {
         ]);
       }
 
-      // Obtener envíos recientes del usuario (filtrados por RLS)
+      // Obtener total de envíos del usuario para calcular páginas
+      const { count, error: countError } = await supabase
+        .from('shipments')
+        .select('*', { count: 'exact', head: true });
+
+      if (countError) throw countError;
+
+      const total = count || 0;
+      setTotalPages(Math.ceil(total / itemsPerPage));
+
+      // Obtener envíos recientes del usuario (filtrados por RLS) con paginación
+      const from = (currentPage - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+
       const { data: userShipments, error: shipmentsError } = await supabase
         .from('shipments')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(5);
+        .range(from, to);
 
       if (shipmentsError) throw shipmentsError;
 
@@ -249,6 +266,55 @@ const Dashboard = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {!loading && recentShipments.length > 0 && totalPages > 1 && (
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                <div className="text-sm text-gray-600">
+                  Página {currentPage} de {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                    className="border-gray-300"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className={
+                          currentPage === page
+                            ? "bg-[#2c5aa0] hover:bg-[#234a82] text-white"
+                            : "border-gray-300"
+                        }
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                    className="border-gray-300"
+                  >
+                    Siguiente
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
