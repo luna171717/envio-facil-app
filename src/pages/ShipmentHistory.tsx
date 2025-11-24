@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,16 +15,62 @@ import { Search, Download, Filter, RotateCcw } from "lucide-react";
 import Layout from "@/components/Layout";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 const ShipmentHistory = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [allShipments, setAllShipments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
-  const handleDownloadPDF = (shipmentId: string, destination: string, status: string, date: string, cost: string) => {
+  useEffect(() => {
+    fetchShipments();
+  }, []);
+
+  const fetchShipments = async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Debes iniciar sesión para ver tu historial",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      setAllShipments(data || []);
+    } catch (error) {
+      console.error('Error fetching shipments:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los envíos",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDownloadPDF = (shipment: any) => {
     const doc = new jsPDF();
     
     // Title
@@ -40,7 +86,7 @@ const ShipmentHistory = () => {
     doc.text("ID de seguimiento", 105, 37, { align: "center" });
     doc.setFontSize(14);
     doc.setTextColor(0, 0, 0);
-    doc.text(shipmentId, 105, 45, { align: "center" });
+    doc.text(shipment.tracking_id, 105, 45, { align: "center" });
     
     // Shipment Information
     doc.setFontSize(12);
@@ -51,11 +97,14 @@ const ShipmentHistory = () => {
       startY: 65,
       head: [['Campo', 'Información']],
       body: [
-        ['ID de seguimiento', shipmentId],
-        ['Destino', destination],
-        ['Estado', status],
-        ['Fecha', date],
-        ['Costo', cost],
+        ['ID de seguimiento', shipment.tracking_id],
+        ['Origen', shipment.origin],
+        ['Destino', shipment.destination],
+        ['Estado', shipment.status],
+        ['Fecha', format(new Date(shipment.created_at), 'dd/MM/yyyy')],
+        ['Costo Total', `$${shipment.total_cost.toFixed(2)}`],
+        ['Destinatario', shipment.recipient_name],
+        ['Dirección', `${shipment.recipient_address}, ${shipment.recipient_city}, ${shipment.recipient_state} ${shipment.recipient_zip}`],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -67,7 +116,7 @@ const ShipmentHistory = () => {
     doc.text("Gracias por usar nuestro servicio de envíos", 105, 280, { align: "center" });
     
     // Save PDF
-    doc.save(`Envio-${shipmentId}.pdf`);
+    doc.save(`Envio-${shipment.tracking_id}.pdf`);
   };
 
   const handleReset = () => {
@@ -77,18 +126,6 @@ const ShipmentHistory = () => {
     setCurrentPage(1);
   };
 
-  const allShipments = [
-    { id: "SHP-2025-001", destination: "New York, USA", status: "Entregado", date: "15 de enero de 2025", cost: "$45.00" },
-    { id: "SHP-2025-002", destination: "London, UK", status: "En tránsito", date: "18 de enero de 2025", cost: "$78.50" },
-    { id: "SHP-2025-003", destination: "Tokyo, Japan", status: "Aduanas", date: "20 de enero de 2025", cost: "$125.00" },
-    { id: "SHP-2025-004", destination: "Berlin, Germany", status: "En tránsito", date: "22 de enero de 2025", cost: "$62.25" },
-    { id: "SHP-2025-005", destination: "Sydney, Australia", status: "Pendiente", date: "23 de enero de 2025", cost: "$89.75" },
-    { id: "SHP-2025-001", destination: "New York, USA", status: "Entregado", date: "15 de enero de 2025", cost: "$45.00" },
-    { id: "SHP-2025-002", destination: "London, UK", status: "En tránsito", date: "18 de enero de 2025", cost: "$78.50" },
-    { id: "SHP-2025-003", destination: "Tokyo, Japan", status: "Aduanas", date: "20 de enero de 2025", cost: "$125.00" },
-    { id: "SHP-2025-004", destination: "Berlin, Germany", status: "En tránsito", date: "22 de enero de 2025", cost: "$62.25" },
-    { id: "SHP-2025-005", destination: "Sydney, Australia", status: "Pendiente", date: "23 de enero de 2025", cost: "$89.75" },
-  ];
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -102,12 +139,15 @@ const ShipmentHistory = () => {
 
   const filteredShipments = allShipments.filter((shipment) => {
     const matchesSearch =
-      shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      shipment.destination.toLowerCase().includes(searchTerm.toLowerCase());
+      shipment.tracking_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shipment.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shipment.recipient_name.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const matchesDate = !dateFilter || format(new Date(shipment.created_at), 'yyyy-MM-dd') === dateFilter;
+
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   // Pagination
@@ -115,6 +155,14 @@ const ShipmentHistory = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedShipments = filteredShipments.slice(startIndex, endIndex);
+
+  if (loading) {
+    return (
+      <Layout title="Historial de envíos">
+        <div className="text-center py-8">Cargando...</div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Historial de envíos">
@@ -206,11 +254,11 @@ const ShipmentHistory = () => {
                 <tbody>
                   {paginatedShipments.map((shipment, index) => (
                     <tr
-                      key={`${shipment.id}-${index}`}
+                      key={shipment.id}
                       className="border-b hover:bg-gray-50 transition-colors"
                     >
                       <td className="py-3 px-4 text-sm">
-                        {shipment.id}
+                        {shipment.tracking_id}
                       </td>
                       <td className="py-3 px-4 text-sm">
                         {shipment.destination}
@@ -221,17 +269,17 @@ const ShipmentHistory = () => {
                         </span>
                       </td>
                       <td className="py-3 px-4 text-sm">
-                        {shipment.date}
+                        {format(new Date(shipment.created_at), 'dd/MM/yyyy')}
                       </td>
                       <td className="py-3 px-4 text-sm font-medium">
-                        {shipment.cost}
+                        ${shipment.total_cost.toFixed(2)}
                       </td>
                       <td className="py-3 px-4">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="text-blue-600 hover:text-blue-700"
-                          onClick={() => handleDownloadPDF(shipment.id, shipment.destination, shipment.status, shipment.date, shipment.cost)}
+                          onClick={() => handleDownloadPDF(shipment)}
                         >
                           Ver detalles
                           <Download className="ml-2 h-4 w-4" />
