@@ -45,17 +45,21 @@ const ShipmentCost = () => {
   /**
    * Calcula el costo total según el servicio seleccionado
    * Incluye: costo base, seguro, cargo por fragilidad y velocidad de entrega
+   * El precio de velocidad depende del tipo de servicio:
+   * - Estándar: $10.00
+   * - Express: $20.00
+   * - Siguiente día: $30.00
    */
   const calculateServiceCost = (serviceKey: string) => {
     const shippingCost = calculateShippingCost();
     const insurance = 15.00;
     const fragileCharge = isFragile ? 10.00 : 0;
     
-    let deliverySpeed = 10.00; // Standard
-    if (serviceKey === "fedex-express") {
-      deliverySpeed = 30.00; // Next day
-    } else if (serviceKey === "ups-ground") {
-      deliverySpeed = 20.00; // Express
+    let deliverySpeed = 10.00; // Standard por defecto
+    if (serviceType === "express") {
+      deliverySpeed = 20.00;
+    } else if (serviceType === "next-day") {
+      deliverySpeed = 30.00;
     }
 
     return shippingCost + insurance + fragileCharge + deliverySpeed;
@@ -272,8 +276,8 @@ const ShipmentCost = () => {
                       </div>
                     )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Velocidad estándar</span>
-                      <span>$10.00</span>
+                      <span>Velocidad {serviceType === "express" ? "express" : serviceType === "next-day" ? "siguiente día" : "estándar"}</span>
+                      <span>${serviceType === "express" ? "20.00" : serviceType === "next-day" ? "30.00" : "10.00"}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
@@ -343,8 +347,8 @@ const ShipmentCost = () => {
                       </div>
                     )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Velocidad urgente</span>
-                      <span>$30.00</span>
+                      <span>Velocidad {serviceType === "express" ? "express" : serviceType === "next-day" ? "siguiente día" : "estándar"}</span>
+                      <span>${serviceType === "express" ? "20.00" : serviceType === "next-day" ? "30.00" : "10.00"}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
@@ -409,8 +413,8 @@ const ShipmentCost = () => {
                       </div>
                     )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Velocidad express</span>
-                      <span>$20.00</span>
+                      <span>Velocidad {serviceType === "express" ? "express" : serviceType === "next-day" ? "siguiente día" : "estándar"}</span>
+                      <span>${serviceType === "express" ? "20.00" : serviceType === "next-day" ? "30.00" : "10.00"}</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
