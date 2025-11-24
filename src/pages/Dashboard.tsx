@@ -8,9 +8,8 @@ import {
   Clock,
   CheckCircle2,
   Plus,
-  Search,
+  Calculator,
   Eye,
-  History,
 } from "lucide-react";
 import Layout from "@/components/Layout";
 
@@ -19,114 +18,109 @@ const Dashboard = () => {
 
   const metrics = [
     {
-      title: "Total de Envíos",
-      value: "1,234",
+      title: "Total envíos",
+      value: "247",
       icon: Package,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
     },
     {
-      title: "En Camino",
-      value: "48",
+      title: "En camino",
+      value: "18",
       icon: TrendingUp,
-      color: "text-info",
+      color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
       title: "Pendientes",
-      value: "12",
+      value: "5",
       icon: Clock,
-      color: "text-warning",
-      bgColor: "bg-yellow-50",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
     },
     {
       title: "Entregados",
-      value: "1,174",
+      value: "224",
       icon: CheckCircle2,
-      color: "text-success",
+      color: "text-green-600",
       bgColor: "bg-green-50",
     },
   ];
 
   const recentShipments = [
     {
-      id: "ENV-2024-001234",
-      destination: "Ciudad de México, CDMX",
-      status: "En camino",
-      statusColor: "info",
-      date: "2024-11-20",
-      cost: "$450.00",
+      id: "SHP-2025-001",
+      destination: "New York, USA",
+      status: "Entregado",
+      statusColor: "success",
+      date: "15 de enero de 2025",
+      cost: "$45.00",
     },
     {
-      id: "ENV-2024-001233",
-      destination: "Guadalajara, JAL",
+      id: "SHP-2025-002",
+      destination: "London, UK",
+      status: "En tránsito",
+      statusColor: "info",
+      date: "18 de enero de 2025",
+      cost: "$78.50",
+    },
+    {
+      id: "SHP-2025-003",
+      destination: "Tokyo, Japan",
+      status: "Aduanas",
+      statusColor: "warning",
+      date: "20 de enero de 2025",
+      cost: "$125.00",
+    },
+    {
+      id: "SHP-2025-004",
+      destination: "Berlin, Germany",
+      status: "En tránsito",
+      statusColor: "info",
+      date: "22 de enero de 2025",
+      cost: "$67.25",
+    },
+    {
+      id: "SHP-2025-005",
+      destination: "Sydney, Australia",
       status: "Pendiente",
       statusColor: "warning",
-      date: "2024-11-20",
-      cost: "$320.00",
-    },
-    {
-      id: "ENV-2024-001232",
-      destination: "Monterrey, NL",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-19",
-      cost: "$380.00",
-    },
-    {
-      id: "ENV-2024-001231",
-      destination: "Puebla, PUE",
-      status: "En camino",
-      statusColor: "info",
-      date: "2024-11-19",
-      cost: "$290.00",
-    },
-    {
-      id: "ENV-2024-001230",
-      destination: "Tijuana, BC",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-18",
-      cost: "$560.00",
+      date: "23 de enero de 2025",
+      cost: "$89.75",
     },
   ];
-
-  const getStatusVariant = (color: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      info: "default",
-      warning: "secondary",
-      success: "outline",
-    };
-    return variants[color] || "default";
-  };
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Gestiona y monitorea todos tus envíos
-            </p>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <div className="flex gap-3">
+            <Button 
+              onClick={() => navigate("/new-shipment")} 
+              className="bg-[#2c5aa0] hover:bg-[#234a82] text-white"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo envío
+            </Button>
+            <Button variant="outline" className="border-gray-300">
+              <Calculator className="mr-2 h-4 w-4" />
+              Calcular costo
+            </Button>
           </div>
-          <Button size="lg" onClick={() => navigate("/new-shipment")} className="w-full sm:w-auto">
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Envío
-          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => (
-            <Card key={metric.title} className="border-border hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">{metric.title}</p>
-                    <p className="text-2xl font-bold text-foreground">{metric.value}</p>
+            <Card key={metric.title} className="bg-white border-gray-200">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-3">
+                  <div className={`${metric.bgColor} p-3 rounded-lg`}>
+                    <metric.icon className={`h-5 w-5 ${metric.color}`} />
                   </div>
-                  <div className={`${metric.bgColor} p-3 rounded-xl`}>
-                    <metric.icon className={`h-6 w-6 ${metric.color}`} />
+                  <div>
+                    <p className="text-sm text-gray-600">{metric.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
                   </div>
                 </div>
               </CardContent>
@@ -134,71 +128,71 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <Card className="border-border">
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-foreground">Envíos Recientes</h2>
-              <Button variant="outline" size="sm" onClick={() => navigate("/history")}>
-                <History className="mr-2 h-4 w-4" />
-                Ver Todo
-              </Button>
-            </div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Envíos recientes</h2>
 
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      ID de Seguimiento
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
+                      ID de seguimiento
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
                       Destino
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
                       Estado
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
                       Fecha
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
                       Costo
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 uppercase">
                       Acciones
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {recentShipments.map((shipment) => (
-                    <tr key={shipment.id} className="border-b border-border hover:bg-muted/50 transition-colors">
+                  {recentShipments.map((shipment, index) => (
+                    <tr 
+                      key={shipment.id} 
+                      className={index !== recentShipments.length - 1 ? "border-b border-gray-100" : ""}
+                    >
                       <td className="py-4 px-4">
-                        <span className="font-mono text-sm text-foreground">{shipment.id}</span>
+                        <span className="text-sm text-gray-900">{shipment.id}</span>
                       </td>
-                      <td className="py-4 px-4 text-sm text-foreground">{shipment.destination}</td>
+                      <td className="py-4 px-4 text-sm text-gray-600">{shipment.destination}</td>
                       <td className="py-4 px-4">
-                        <Badge variant={getStatusVariant(shipment.statusColor)}>
+                        <Badge 
+                          variant={
+                            shipment.statusColor === "success" ? "outline" : 
+                            shipment.statusColor === "info" ? "default" : 
+                            "secondary"
+                          }
+                          className={
+                            shipment.statusColor === "success" ? "bg-green-50 text-green-700 border-green-200" :
+                            shipment.statusColor === "info" ? "bg-blue-50 text-blue-700" :
+                            "bg-amber-50 text-amber-700"
+                          }
+                        >
                           {shipment.status}
                         </Badge>
                       </td>
-                      <td className="py-4 px-4 text-sm text-muted-foreground">{shipment.date}</td>
-                      <td className="py-4 px-4 text-sm font-medium text-foreground">{shipment.cost}</td>
+                      <td className="py-4 px-4 text-sm text-gray-600">{shipment.date}</td>
+                      <td className="py-4 px-4 text-sm font-medium text-gray-900">{shipment.cost}</td>
                       <td className="py-4 px-4">
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/track/${shipment.id}`)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/track/${shipment.id}`)}
-                          >
-                            <Search className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-700 px-0"
+                          onClick={() => navigate(`/track/${shipment.id}`)}
+                        >
+                          Visto
+                        </Button>
                       </td>
                     </tr>
                   ))}
