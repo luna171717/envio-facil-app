@@ -223,15 +223,9 @@ const ShipmentDetails = () => {
     doc.setTextColor(100, 100, 100);
     doc.text("Gracias por usar nuestro servicio de envíos", 105, 280, { align: "center" });
     
-    // Open PDF in new window for printing
-    const pdfBlob = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfBlob);
-    const printWindow = window.open(pdfUrl);
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow.print();
-      };
-    }
+    // Auto print the PDF
+    doc.autoPrint();
+    window.open(doc.output('bloburl'), '_blank');
   };
 
   const trackingHistory = [
