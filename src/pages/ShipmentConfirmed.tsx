@@ -1,17 +1,132 @@
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Download, Eye, Mail, Bell, Plus } from "lucide-react";
 import Layout from "@/components/Layout";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const ShipmentConfirmed = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { packageInfo, receiverInfo } = location.state || {};
+  const [isSaving, setIsSaving] = useState(false);
+  const [trackingId, setTrackingId] = useState("");
 
-  // Generar un código de seguimiento aleatorio
-  const trackingId = `ESP-2025-${Math.floor(Math.random() * 1000000000)}`;
+  useEffect(() => {
+    if (!packageInfo || !receiverInfo) {
+      toast({
+        title: "Error",
+        description: "No se encontró información del envío",
+        variant: "destructive",
+      });
+      navigate("/new-shipment");
+      return;
+    }
+
+    saveShipment();
+  }, []);
+
+  const saveShipment = async () => {
+    try {
+      setIsSaving(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Debes iniciar sesión para crear un envío",
+          variant: "destructive",
+        });
+        navigate("/");
+        return;
+      }
+
+      // Generar tracking ID único
+      const generatedTrackingId = `TRK-2025-${Math.floor(100 + Math.random() * 900)}`;
+      setTrackingId(generatedTrackingId);
+
+      // Calcular costos
+      const weight = parseFloat(packageInfo.weight) || 0;
+      const WEIGHT_THRESHOLD = 15;
+      const EXCESS_WEIGHT_RATE = 8.00;
+      const baseRate = 50.00;
+      const weightSurcharge = weight > WEIGHT_THRESHOLD ? (weight - WEIGHT_THRESHOLD) * EXCESS_WEIGHT_RATE : 0;
+      const insuranceCost = 15.00;
+      const fragileCharge = packageInfo.fragile ? 10.00 : 0;
+      
+      // Calcular delivery cost según preferencia
+      let deliveryCost = 10.00; // standard
+      if (receiverInfo.deliveryPreference === 'express') {
+        deliveryCost = 20.00;
+      } else if (receiverInfo.deliveryPreference === 'overnight') {
+        deliveryCost = 30.00;
+      }
+
+      const subtotal = baseRate + weightSurcharge + insuranceCost + fragileCharge + deliveryCost;
+      const tax = subtotal * 0.16;
+      const totalCost = subtotal + tax;
+
+      // Calcular fecha estimada de entrega
+      const estimatedDate = new Date();
+      estimatedDate.setDate(estimatedDate.getDate() + 3);
+
+      // Insertar en Supabase
+      const { error } = await supabase.from('shipments').insert({
+        user_id: user.id,
+        tracking_id: generatedTrackingId,
+        origin: "Ciudad de México, México",
+        destination: `${receiverInfo.city}, ${receiverInfo.state}`,
+        recipient_name: receiverInfo.name,
+        recipient_phone: receiverInfo.phone || null,
+        recipient_email: receiverInfo.email || null,
+        recipient_address: receiverInfo.address,
+        recipient_city: receiverInfo.city,
+        recipient_state: receiverInfo.state,
+        recipient_zip: receiverInfo.zipCode,
+        recipient_country: "México",
+        package_weight: weight,
+        package_length: parseFloat(packageInfo.length) || 0,
+        package_width: parseFloat(packageInfo.width) || 0,
+        package_height: parseFloat(packageInfo.height) || 0,
+        package_description: packageInfo.description || null,
+        package_value: parseFloat(packageInfo.value) || null,
+        is_fragile: packageInfo.fragile,
+        delivery_preference: receiverInfo.deliveryPreference,
+        service_type: receiverInfo.deliveryPreference,
+        special_instructions: receiverInfo.specialInstructions || null,
+        status: "Pendiente",
+        base_cost: baseRate,
+        weight_surcharge: weightSurcharge,
+        insurance_cost: insuranceCost,
+        fragile_charge: fragileCharge,
+        delivery_cost: deliveryCost,
+        subtotal: subtotal,
+        tax: tax,
+        total_cost: totalCost,
+        estimated_delivery_date: estimatedDate.toISOString().split('T')[0],
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "¡Envío creado!",
+        description: "Tu envío ha sido registrado exitosamente",
+      });
+
+    } catch (error) {
+      console.error('Error saving shipment:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo guardar el envío. Por favor intenta de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const estimatedDate = new Date();
   estimatedDate.setDate(estimatedDate.getDate() + 3);
@@ -125,6 +240,14 @@ const ShipmentConfirmed = () => {
     // Guardar PDF
     doc.save(`Envio-${trackingId}.pdf`);
   };
+
+  if (isSaving || !trackingId) {
+    return (
+      <Layout title="Confirmación de envío">
+        <div className="text-center py-8">Guardando envío...</div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Confirmación de envío">
