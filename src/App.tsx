@@ -10,6 +10,7 @@ import ShipmentCost from "./pages/ShipmentCost";
 import ConfirmShipment from "./pages/ConfirmShipment";
 import ShipmentConfirmed from "./pages/ShipmentConfirmed";
 import TrackShipment from "./pages/TrackShipment";
+import ShipmentDetails from "./pages/ShipmentDetails";
 import DeliveryConfirmation from "./pages/DeliveryConfirmation";
 import RateExperience from "./pages/RateExperience";
 import ShipmentHistory from "./pages/ShipmentHistory";
@@ -82,7 +83,7 @@ const App = () => (
             path="/track/:id"
             element={
               <ProtectedRoute>
-                <TrackShipment />
+                <ShipmentDetails />
               </ProtectedRoute>
             }
           />
