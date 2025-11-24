@@ -152,7 +152,7 @@ const NewShipment = () => {
         <div className={`grid gap-6 ${step === 3 ? '' : 'lg:grid-cols-3'}`}>
           {/* Left Column - Form */}
           <div className={step === 3 ? '' : 'lg:col-span-2'}>
-            <Card className="bg-[#fafafa] border-none shadow-none">
+            <Card className="bg-transparent border-none shadow-none">
               <CardContent className="p-6">
                 {step === 1 && (
                   <div className="space-y-6">
@@ -537,7 +537,7 @@ const NewShipment = () => {
                       {/* Columna Izquierda */}
                       <div className="space-y-6">
                         {/* Resumen del Envío */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h3 className="font-semibold text-gray-900">Resumen del Envío</h3>
                             <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
@@ -591,7 +591,7 @@ const NewShipment = () => {
                         </div>
 
                         {/* Desglose de Costos */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
                           <h3 className="font-semibold text-gray-900 mb-4">Desglose de Costos</h3>
                           
                           <table className="w-full text-sm">
@@ -668,7 +668,7 @@ const NewShipment = () => {
                       {/* Columna Derecha */}
                       <div className="space-y-6">
                         {/* Método de Pago */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
                           <h3 className="font-semibold text-gray-900 mb-4">Método de Pago</h3>
                           
                           <div className="mb-4">
@@ -700,7 +700,7 @@ const NewShipment = () => {
                         </div>
 
                         {/* Tiempo de Entrega */}
-                        <div className="border border-gray-200 rounded-lg p-4">
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
                           <h3 className="font-semibold text-gray-900 mb-4">Tiempo de Entrega</h3>
                           
                           <div className="space-y-3 text-sm">
