@@ -724,6 +724,23 @@ const NewShipment = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* Botones de Acción */}
+                        <div className="space-y-3">
+                          <Button
+                            onClick={handleNext}
+                            className="w-full bg-[#2c5aa0] hover:bg-[#234a82]"
+                          >
+                            Confirmar Envío
+                          </Button>
+                          <Button
+                            onClick={() => setStep(1)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            Editar información
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -731,7 +748,8 @@ const NewShipment = () => {
               </CardContent>
             </Card>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Solo para pasos 1 y 2 */}
+            {step !== 3 && (
             <div className="flex justify-between mt-6">
               {step > 1 && (
                 <Button variant="ghost" onClick={handleBack} className="text-gray-600">
@@ -743,10 +761,11 @@ const NewShipment = () => {
                 onClick={handleNext}
                 className="ml-auto bg-[#2c5aa0] hover:bg-[#234a82]"
               >
-                {step === 3 ? "Confirmar Envío" : "Siguiente"}
+                Siguiente
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
+            )}
           </div>
 
           {/* Right Column - Summary (hidden on step 3) */}
