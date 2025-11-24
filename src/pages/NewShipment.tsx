@@ -749,7 +749,8 @@ const NewShipment = () => {
             </div>
           </div>
 
-          {/* Right Column - Summary */}
+          {/* Right Column - Summary (hidden on step 3) */}
+          {step !== 3 && (
           <div className="lg:col-span-1">
             <Card className="bg-white border-gray-200 sticky top-6">
               <CardContent className="p-6">
@@ -886,6 +887,7 @@ const NewShipment = () => {
               </CardContent>
             </Card>
           </div>
+          )}
         </div>
       </div>
     </Layout>
