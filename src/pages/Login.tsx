@@ -6,14 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Truck, Package, PackageOpen, ArrowRight, UserPlus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
@@ -25,13 +27,42 @@ const Login = () => {
       return;
     }
 
-    // Simular login exitoso
-    localStorage.setItem("isAuthenticated", "true");
-    toast({
-      title: "¡Bienvenido!",
-      description: "Has iniciado sesión correctamente",
-    });
-    navigate("/dashboard");
+    if (password.length < 6) {
+      toast({
+        title: "Error",
+        description: "La contraseña debe tener al menos 6 caracteres",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        localStorage.setItem("isAuthenticated", "true");
+        toast({
+          title: "¡Bienvenido!",
+          description: "Has iniciado sesión correctamente",
+        });
+        navigate("/dashboard");
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "No se pudo iniciar sesión. Verifica tus credenciales.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -132,8 +163,9 @@ const Login = () => {
             <Button 
               type="submit" 
               className="w-full h-12 text-base bg-[#2c5aa0] hover:bg-[#234a82] text-white font-medium"
+              disabled={loading}
             >
-              Iniciar sesión
+              {loading ? "Iniciando sesión..." : "Iniciar sesión"}
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </form>
