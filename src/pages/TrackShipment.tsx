@@ -21,12 +21,23 @@ const TrackShipment = () => {
   const navigate = useNavigate();
   const [trackingId, setTrackingId] = useState(id || "");
   const [isTracking, setIsTracking] = useState(!!id);
+  const [isDelivered, setIsDelivered] = useState(false);
 
   const handleTrack = () => {
     if (trackingId.trim()) {
       setIsTracking(true);
       navigate(`/track/${trackingId}`);
     }
+  };
+
+  const handleNotifyDelivery = () => {
+    setIsDelivered(true);
+  };
+
+  const getCurrentDate = () => {
+    const now = new Date();
+    return now.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) + 
+           ', ' + now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
   const trackingHistory = [
@@ -49,15 +60,16 @@ const TrackShipment = () => {
       location: "Centro de Distribución Barcelona",
       date: "16 Enero 2025, 08:15",
       time: "Centro de Distribución Barcelona",
-      completed: false,
-      current: true,
+      completed: !isDelivered,
+      current: !isDelivered,
     },
     {
       status: "Entregado",
       location: "Residencia de Entrega",
-      date: "Estimado: 16 Enero 2025",
+      date: isDelivered ? getCurrentDate() : "Estimado: 16 Enero 2025",
       time: "Residencia de Entrega",
-      completed: false,
+      completed: isDelivered,
+      current: isDelivered,
     },
   ];
 
@@ -89,8 +101,8 @@ const TrackShipment = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold">Información del Envío</h2>
-                  <span className="bg-orange-100 text-orange-700 text-xs font-medium px-3 py-1 rounded">
-                    En Tránsito
+                  <span className={`${isDelivered ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'} text-xs font-medium px-3 py-1 rounded`}>
+                    {isDelivered ? 'Entregado' : 'En Tránsito'}
                   </span>
                 </div>
 
@@ -199,9 +211,15 @@ const TrackShipment = () => {
                 <CardContent className="p-4">
                   <h3 className="font-semibold mb-3 text-sm">Acciones</h3>
                   <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start bg-white" size="sm">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start bg-white" 
+                      size="sm"
+                      onClick={handleNotifyDelivery}
+                      disabled={isDelivered}
+                    >
                       <Bell className="mr-2 h-4 w-4" />
-                      Notificar Entrega
+                      {isDelivered ? 'Entrega Notificada' : 'Notificar Entrega'}
                     </Button>
                     <Button variant="outline" className="w-full justify-start bg-white" size="sm">
                       <Download className="mr-2 h-4 w-4" />
