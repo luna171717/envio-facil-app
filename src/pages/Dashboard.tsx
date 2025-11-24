@@ -91,23 +91,20 @@ const Dashboard = () => {
   ];
 
   return (
-    <Layout>
+    <Layout title="Dashboard">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <div className="flex gap-3">
-            <Button 
-              onClick={() => navigate("/new-shipment")} 
-              className="bg-[#2c5aa0] hover:bg-[#234a82] text-white"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Nuevo envío
-            </Button>
-            <Button variant="outline" className="border-gray-300">
-              <Calculator className="mr-2 h-4 w-4" />
-              Calcular costo
-            </Button>
-          </div>
+        <div className="flex gap-3">
+          <Button 
+            onClick={() => navigate("/new-shipment")} 
+            className="bg-[#2c5aa0] hover:bg-[#234a82] text-white"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Nuevo envío
+          </Button>
+          <Button variant="outline" className="border-gray-300">
+            <Calculator className="mr-2 h-4 w-4" />
+            Calcular costo
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
