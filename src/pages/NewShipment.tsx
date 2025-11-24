@@ -46,6 +46,12 @@ const NewShipment = () => {
     deliveryPreference: "standard",
   });
 
+  /**
+   * Calcula el costo de entrega según la preferencia seleccionada
+   * - Standard: $10.00
+   * - Express: $20.00
+   * - Overnight: $30.00
+   */
   const getDeliveryCost = () => {
     switch (receiverInfo.deliveryPreference) {
       case "express":
@@ -57,6 +63,11 @@ const NewShipment = () => {
     }
   };
 
+  /**
+   * Calcula el costo estimado total del envío
+   * Incluye: tarifa base, recargo por peso, seguro, cargo por fragilidad, costo de entrega e IVA
+   * @returns String con el total formateado o "--" si no hay peso
+   */
   const calculateEstimate = () => {
     const weight = parseFloat(packageInfo.weight) || 0;
 
@@ -77,6 +88,13 @@ const NewShipment = () => {
     return "--";
   };
 
+  /**
+   * Maneja la navegación al siguiente paso del formulario
+   * Valida los datos de cada paso antes de avanzar
+   * - Paso 1: Valida dimensiones y peso del paquete
+   * - Paso 2: Valida información del destinatario
+   * - Paso 3: Navega a la página de confirmación
+   */
   const handleNext = () => {
     // Paso 1: Información del paquete
     if (step === 1) {
@@ -114,6 +132,10 @@ const NewShipment = () => {
     }
   };
 
+  /**
+   * Maneja la navegación al paso anterior
+   * Solo permite retroceder si no estamos en el paso 1
+   */
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
