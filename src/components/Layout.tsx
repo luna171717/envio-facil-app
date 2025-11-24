@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 
 interface LayoutProps {
   children: ReactNode;
+  title?: string;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, title }: LayoutProps) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -30,17 +31,20 @@ const Layout = ({ children }: LayoutProps) => {
         )}
       >
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-end px-6 gap-3">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5 text-gray-600" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
-          </Button>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5 text-gray-600" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5 text-gray-600" />
-          </Button>
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+          <h1 className="text-xl font-semibold text-gray-900">{title || "Dashboard"}</h1>
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5 text-gray-600" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></span>
+            </Button>
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5 text-gray-600" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout}>
+              <LogOut className="h-5 w-5 text-gray-600" />
+            </Button>
+          </div>
         </header>
 
         {/* Page Content */}
