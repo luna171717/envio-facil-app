@@ -11,90 +11,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Eye, Download, Calendar } from "lucide-react";
+import { Search, Download, Filter, RotateCcw } from "lucide-react";
 import Layout from "@/components/Layout";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const ShipmentHistory = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const handleDownloadPDF = (shipmentId: string, destination: string, status: string, date: string, cost: string) => {
+    const doc = new jsPDF();
+    
+    // Title
+    doc.setFontSize(20);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Detalles del Envío", 105, 20, { align: "center" });
+    
+    // Tracking ID
+    doc.setFillColor(245, 245, 247);
+    doc.rect(20, 30, 170, 20, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("ID de seguimiento", 105, 37, { align: "center" });
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(shipmentId, 105, 45, { align: "center" });
+    
+    // Shipment Information
+    doc.setFontSize(12);
+    doc.setTextColor(44, 90, 160);
+    doc.text("Información del Envío", 20, 60);
+    
+    autoTable(doc, {
+      startY: 65,
+      head: [['Campo', 'Información']],
+      body: [
+        ['ID de seguimiento', shipmentId],
+        ['Destino', destination],
+        ['Estado', status],
+        ['Fecha', date],
+        ['Costo', cost],
+      ],
+      theme: 'striped',
+      headStyles: { fillColor: [44, 90, 160] },
+    });
+    
+    // Footer
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Gracias por usar nuestro servicio de envíos", 105, 280, { align: "center" });
+    
+    // Save PDF
+    doc.save(`Envio-${shipmentId}.pdf`);
+  };
+
+  const handleReset = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setDateFilter("");
+    setCurrentPage(1);
+  };
 
   const allShipments = [
-    {
-      id: "ENV-2024-001234",
-      destination: "Ciudad de México, CDMX",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-23",
-      cost: "$450.00",
-    },
-    {
-      id: "ENV-2024-001233",
-      destination: "Guadalajara, JAL",
-      status: "En camino",
-      statusColor: "info",
-      date: "2024-11-22",
-      cost: "$320.00",
-    },
-    {
-      id: "ENV-2024-001232",
-      destination: "Monterrey, NL",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-21",
-      cost: "$380.00",
-    },
-    {
-      id: "ENV-2024-001231",
-      destination: "Puebla, PUE",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-20",
-      cost: "$290.00",
-    },
-    {
-      id: "ENV-2024-001230",
-      destination: "Tijuana, BC",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-19",
-      cost: "$560.00",
-    },
-    {
-      id: "ENV-2024-001229",
-      destination: "Cancún, QROO",
-      status: "Cancelado",
-      statusColor: "destructive",
-      date: "2024-11-18",
-      cost: "$480.00",
-    },
-    {
-      id: "ENV-2024-001228",
-      destination: "Mérida, YUC",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-17",
-      cost: "$410.00",
-    },
-    {
-      id: "ENV-2024-001227",
-      destination: "León, GTO",
-      status: "Entregado",
-      statusColor: "success",
-      date: "2024-11-15",
-      cost: "$330.00",
-    },
+    { id: "SHP-2025-001", destination: "New York, USA", status: "Entregado", date: "15 de enero de 2025", cost: "$45.00" },
+    { id: "SHP-2025-002", destination: "London, UK", status: "En tránsito", date: "18 de enero de 2025", cost: "$78.50" },
+    { id: "SHP-2025-003", destination: "Tokyo, Japan", status: "Aduanas", date: "20 de enero de 2025", cost: "$125.00" },
+    { id: "SHP-2025-004", destination: "Berlin, Germany", status: "En tránsito", date: "22 de enero de 2025", cost: "$62.25" },
+    { id: "SHP-2025-005", destination: "Sydney, Australia", status: "Pendiente", date: "23 de enero de 2025", cost: "$89.75" },
+    { id: "SHP-2025-001", destination: "New York, USA", status: "Entregado", date: "15 de enero de 2025", cost: "$45.00" },
+    { id: "SHP-2025-002", destination: "London, UK", status: "En tránsito", date: "18 de enero de 2025", cost: "$78.50" },
+    { id: "SHP-2025-003", destination: "Tokyo, Japan", status: "Aduanas", date: "20 de enero de 2025", cost: "$125.00" },
+    { id: "SHP-2025-004", destination: "Berlin, Germany", status: "En tránsito", date: "22 de enero de 2025", cost: "$62.25" },
+    { id: "SHP-2025-005", destination: "Sydney, Australia", status: "Pendiente", date: "23 de enero de 2025", cost: "$89.75" },
   ];
 
-  const getStatusVariant = (color: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      info: "default",
-      warning: "secondary",
-      success: "outline",
-      destructive: "destructive",
+  const getStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      "Entregado": "bg-green-100 text-green-700",
+      "En tránsito": "bg-blue-100 text-blue-700",
+      "Aduanas": "bg-orange-100 text-orange-700",
+      "Pendiente": "bg-yellow-100 text-yellow-700",
     };
-    return variants[color] || "default";
+    return colors[status] || "bg-gray-100 text-gray-700";
   };
 
   const filteredShipments = allShipments.filter((shipment) => {
@@ -102,30 +105,34 @@ const ShipmentHistory = () => {
       shipment.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       shipment.destination.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      shipment.status.toLowerCase() === statusFilter.toLowerCase();
+    const matchesStatus = !statusFilter || shipment.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
+  // Pagination
+  const totalPages = Math.ceil(filteredShipments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedShipments = filteredShipments.slice(startIndex, endIndex);
+
   return (
-    <Layout>
-      <div className="space-y-6">
+    <Layout title="Historial de envíos">
+      <div className="space-y-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Historial de Envíos</h1>
-          <p className="text-muted-foreground mt-1">
-            Consulta todos tus envíos anteriores
+          <p className="text-sm text-gray-600">
+            Consulta y gestiona tus envíos anteriores
           </p>
         </div>
 
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+        {/* Filters */}
+        <Card className="bg-white">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Buscar por ID o destino..."
+                  placeholder="Busqueda por código de seguimiento, nombre del cliente..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9"
@@ -133,116 +140,102 @@ const ShipmentHistory = () => {
               </div>
 
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full md:w-[180px]">
+                <SelectTrigger className="w-full md:w-[150px]">
                   <SelectValue placeholder="Estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="entregado">Entregado</SelectItem>
-                  <SelectItem value="en camino">En camino</SelectItem>
-                  <SelectItem value="pendiente">Pendiente</SelectItem>
-                  <SelectItem value="cancelado">Cancelado</SelectItem>
+                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="Entregado">Entregado</SelectItem>
+                  <SelectItem value="En tránsito">En tránsito</SelectItem>
+                  <SelectItem value="Aduanas">Aduanas</SelectItem>
+                  <SelectItem value="Pendiente">Pendiente</SelectItem>
                 </SelectContent>
               </Select>
 
-              <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger className="w-full md:w-[180px]">
-                  <SelectValue placeholder="Fecha" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las fechas</SelectItem>
-                  <SelectItem value="today">Hoy</SelectItem>
-                  <SelectItem value="week">Esta semana</SelectItem>
-                  <SelectItem value="month">Este mes</SelectItem>
-                  <SelectItem value="year">Este año</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                placeholder="mm/dd/yyyy"
+                className="w-full md:w-[150px]"
+              />
+
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <Filter className="mr-2 h-4 w-4" />
+                Filtrar
+              </Button>
+
+              <Button variant="outline" onClick={handleReset}>
+                Restaurar
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">
-                  Todos los Envíos
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {filteredShipments.length} envíos encontrados
-                </p>
-              </div>
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Exportar
-              </Button>
+        {/* Table */}
+        <Card className="bg-white">
+          <CardContent className="p-0">
+            <div className="p-4 border-b">
+              <h2 className="font-semibold">Envíos recientes</h2>
             </div>
-
+            
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
-                      ID de Seguimiento
+                  <tr className="border-b bg-gray-50">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+                      ID de seguimiento
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                       Destino
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                       Estado
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                       Fecha
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                       Costo
                     </th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
                       Acciones
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredShipments.map((shipment) => (
+                  {paginatedShipments.map((shipment, index) => (
                     <tr
-                      key={shipment.id}
-                      className="border-b border-border hover:bg-muted/50 transition-colors"
+                      key={`${shipment.id}-${index}`}
+                      className="border-b hover:bg-gray-50 transition-colors"
                     >
-                      <td className="py-4 px-4">
-                        <span className="font-mono text-sm text-foreground">
-                          {shipment.id}
-                        </span>
+                      <td className="py-3 px-4 text-sm">
+                        {shipment.id}
                       </td>
-                      <td className="py-4 px-4 text-sm text-foreground">
+                      <td className="py-3 px-4 text-sm">
                         {shipment.destination}
                       </td>
-                      <td className="py-4 px-4">
-                        <Badge variant={getStatusVariant(shipment.statusColor)}>
+                      <td className="py-3 px-4">
+                        <span className={`text-xs font-medium px-2 py-1 rounded ${getStatusColor(shipment.status)}`}>
                           {shipment.status}
-                        </Badge>
+                        </span>
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
-                          {shipment.date}
-                        </div>
+                      <td className="py-3 px-4 text-sm">
+                        {shipment.date}
                       </td>
-                      <td className="py-4 px-4 text-sm font-medium text-foreground">
+                      <td className="py-3 px-4 text-sm font-medium">
                         {shipment.cost}
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="flex gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/track/${shipment.id}`)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
+                      <td className="py-3 px-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-700"
+                          onClick={() => handleDownloadPDF(shipment.id, shipment.destination, shipment.status, shipment.date, shipment.cost)}
+                        >
+                          Ver detalles
+                          <Download className="ml-2 h-4 w-4" />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -250,15 +243,70 @@ const ShipmentHistory = () => {
               </table>
             </div>
 
-            {filteredShipments.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
-                  No se encontraron envíos con los filtros seleccionados
-                </p>
+            {/* Pagination */}
+            <div className="p-4 border-t flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Mostrando {startIndex + 1}-{Math.min(endIndex, filteredShipments.length)} de {filteredShipments.length} resultados
+                <Download className="inline ml-2 h-4 w-4" />
               </div>
-            )}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                >
+                  Anterior
+                </Button>
+                
+                {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                  const page = i + 1;
+                  return (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className={currentPage === page ? "bg-blue-600" : ""}
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+                
+                {totalPages > 5 && (
+                  <>
+                    <span className="text-gray-400">...</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentPage(totalPages)}
+                    >
+                      {totalPages}
+                    </Button>
+                  </>
+                )}
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Siguiente
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
+
+        {filteredShipments.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500">
+              No se encontraron envíos con los filtros seleccionados
+            </p>
+          </div>
+        )}
       </div>
     </Layout>
   );
