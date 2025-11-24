@@ -49,9 +49,9 @@ const ShipmentConfirmed = () => {
       head: [['Concepto', 'Detalles']],
       body: [
         ['Origen', 'Madrid, España'],
-        ['Destino', `${receiverInfo?.city || 'Barcelona'}, ${receiverInfo?.state || 'España'}`],
-        ['Fecha estimada', '15 Enero 2025'],
-        ['Servicio', 'Envío Estándar'],
+        ['Destino', `${receiverInfo?.city || ''}, ${receiverInfo?.state || ''}`],
+        ['Fecha estimada', estimatedDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })],
+        ['Servicio', receiverInfo?.deliveryPreference === 'express' ? 'Envío Express' : receiverInfo?.deliveryPreference === 'overnight' ? 'Envío Nocturno' : 'Envío Estándar'],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -164,17 +164,25 @@ const ShipmentConfirmed = () => {
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Fecha estimada</p>
-              <p className="text-sm font-medium text-gray-900">15 Enero 2025</p>
+              <p className="text-sm font-medium text-gray-900">
+                {estimatedDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Destino</p>
               <p className="text-sm font-medium text-gray-900">
-                {receiverInfo?.city || "Barcelona"}, {receiverInfo?.state || "España"}
+                {receiverInfo?.city || "N/A"}, {receiverInfo?.state || "N/A"}
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Servicio</p>
-              <p className="text-sm font-medium text-gray-900">Envío Estándar</p>
+              <p className="text-sm font-medium text-gray-900">
+                {receiverInfo?.deliveryPreference === 'express' 
+                  ? 'Envío Express' 
+                  : receiverInfo?.deliveryPreference === 'overnight'
+                  ? 'Envío Nocturno'
+                  : 'Envío Estándar'}
+              </p>
             </div>
           </div>
 
