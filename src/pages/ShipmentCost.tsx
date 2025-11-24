@@ -203,7 +203,7 @@ const ShipmentCost = () => {
               <SelectContent>
                 <SelectItem value="standard">Estándar</SelectItem>
                 <SelectItem value="express">Express</SelectItem>
-                <SelectItem value="overnight">Nocturno</SelectItem>
+                <SelectItem value="next-day">Siguiente día</SelectItem>
               </SelectContent>
             </Select>
 
