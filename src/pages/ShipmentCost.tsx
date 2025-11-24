@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -17,42 +18,77 @@ const ShipmentCost = () => {
   const navigate = useNavigate();
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
-  const [packageDetails, setPackageDetails] = useState("");
+  const [weight, setWeight] = useState("");
+  const [length, setLength] = useState("");
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
+  const [isFragile, setIsFragile] = useState(false);
   const [serviceType, setServiceType] = useState("");
   const [selectedService, setSelectedService] = useState("fedex-ground");
+
+  /**
+   * Calcula el costo base del envío según el peso
+   * Aplica recargo si el peso supera 15kg
+   */
+  const calculateShippingCost = () => {
+    const weightNum = parseFloat(weight) || 0;
+    if (weightNum === 0) return 0;
+
+    const baseRate = 50.00;
+    const WEIGHT_THRESHOLD = 15;
+    const EXCESS_WEIGHT_RATE = 8.00;
+    const weightSurcharge = weightNum > WEIGHT_THRESHOLD ? (weightNum - WEIGHT_THRESHOLD) * EXCESS_WEIGHT_RATE : 0;
+    
+    return baseRate + weightSurcharge;
+  };
+
+  /**
+   * Calcula el costo total según el servicio seleccionado
+   * Incluye: costo base, seguro, cargo por fragilidad y velocidad de entrega
+   */
+  const calculateServiceCost = (serviceKey: string) => {
+    const shippingCost = calculateShippingCost();
+    const insurance = 15.00;
+    const fragileCharge = isFragile ? 10.00 : 0;
+    
+    let deliverySpeed = 10.00; // Standard
+    if (serviceKey === "fedex-express") {
+      deliverySpeed = 30.00; // Next day
+    } else if (serviceKey === "ups-ground") {
+      deliverySpeed = 20.00; // Express
+    }
+
+    return shippingCost + insurance + fragileCharge + deliverySpeed;
+  };
+
 
   const services = {
     "fedex-ground": {
       name: "FedEx Ground",
       subtitle: "Envío terrestre confiable",
-      days: "3-5 Days",
-      baseFee: 19.99,
-      fuelSurcharge: 2.50,
-      insurance: 2.50,
-      deliveryDate: "Para el 18 de enero de 2025",
+      days: "3-5 Días",
+      deliveryDate: "Entrega estándar",
     },
     "fedex-express": {
       name: "FedEx Express",
-      subtitle: "Sugerida día hábil",
-      days: "1 Day",
-      baseFee: 85.00,
-      fuelSurcharge: 3.99,
-      insurance: 1.00,
-      deliveryDate: "Para el 16 de enero de 2025",
+      subtitle: "Entrega al día siguiente",
+      days: "1 Día",
+      deliveryDate: "Entrega urgente",
     },
     "ups-ground": {
       name: "UPS Ground",
-      subtitle: "Entrega terrestre estándar",
-      days: "4-6 Days",
-      baseFee: 18.00,
-      fuelSurcharge: 2.50,
-      insurance: 2.00,
-      deliveryDate: "Para el 18 de enero de 2025",
+      subtitle: "Entrega express",
+      days: "2-3 Días",
+      deliveryDate: "Entrega rápida",
     },
   };
 
   const currentService = services[selectedService as keyof typeof services];
-  const total = currentService.baseFee + currentService.fuelSurcharge + currentService.insurance;
+  const totalCost = calculateServiceCost(selectedService);
+  const shippingBase = calculateShippingCost();
+  const weightNum = parseFloat(weight) || 0;
+  const WEIGHT_THRESHOLD = 15;
+  const weightSurcharge = weightNum > WEIGHT_THRESHOLD ? (weightNum - WEIGHT_THRESHOLD) * 8.00 : 0;
 
   return (
     <Layout title="Presupuesto de coste y entrega">
@@ -93,14 +129,63 @@ const ShipmentCost = () => {
             <CardContent className="p-4">
               <h2 className="font-semibold mb-4">Detalles de paquete</h2>
               
-              <div>
-                <label className="text-xs text-gray-600 block mb-1">Paquete</label>
-                <Input
-                  placeholder="Escribe los detalles del paquete"
-                  value={packageDetails}
-                  onChange={(e) => setPackageDetails(e.target.value)}
-                  className="bg-white border-gray-200"
-                />
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs text-gray-600 mb-1">Peso (kg)</Label>
+                  <Input
+                    type="number"
+                    placeholder="Ej: 20"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    className="bg-white border-gray-200"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1">Largo (cm)</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={length}
+                      onChange={(e) => setLength(e.target.value)}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1">Ancho (cm)</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={width}
+                      onChange={(e) => setWidth(e.target.value)}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-600 mb-1">Alto (cm)</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      className="bg-white border-gray-200"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="fragile"
+                    checked={isFragile}
+                    onChange={(e) => setIsFragile(e.target.checked)}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <Label htmlFor="fragile" className="text-sm text-gray-700 cursor-pointer">
+                    Artículo frágil (+$10.00)
+                  </Label>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -149,15 +234,15 @@ const ShipmentCost = () => {
                 </div>
               </div>
 
-              {selectedService === 'fedex-ground' && (
+              {selectedService === 'fedex-ground' && weightNum > 0 && (
                 <>
                   <div className="flex justify-between items-center mb-4 pb-4 border-b">
                     <div>
-                      <p className="text-2xl font-bold">${total.toFixed(2)}</p>
+                      <p className="text-2xl font-bold">${totalCost.toFixed(2)}</p>
                       <p className="text-xs text-gray-500">Costo total</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">3-5 Days</p>
+                      <p className="font-semibold">{currentService.days}</p>
                       <p className="text-xs text-gray-500">Entrega estimada</p>
                       <p className="text-xs text-gray-400">{currentService.deliveryDate}</p>
                     </div>
@@ -168,19 +253,31 @@ const ShipmentCost = () => {
                     <h3 className="font-semibold mb-3">Desglose de costos</h3>
                     <div className="flex justify-between text-gray-700">
                       <span>Tarifa base de envío</span>
-                      <span>${currentService.baseFee.toFixed(2)}</span>
+                      <span>$50.00</span>
                     </div>
+                    {weightSurcharge > 0 && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Recargo por peso ({weightNum}kg - 15kg)</span>
+                        <span>${weightSurcharge.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Recargo por combustible</span>
-                      <span>${currentService.fuelSurcharge.toFixed(2)}</span>
+                      <span>Seguro</span>
+                      <span>$15.00</span>
                     </div>
+                    {isFragile && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Manejo frágil</span>
+                        <span>$10.00</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Seguro (opcional)</span>
-                      <span>${currentService.insurance.toFixed(2)}</span>
+                      <span>Velocidad estándar</span>
+                      <span>$10.00</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
+                      <span>${totalCost.toFixed(2)}</span>
                     </div>
                   </div>
                 </>
@@ -216,30 +313,42 @@ const ShipmentCost = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">${(services['fedex-express'].baseFee + services['fedex-express'].fuelSurcharge + services['fedex-express'].insurance).toFixed(2)}</p>
-                    <p className="text-xs text-gray-600">1 Day</p>
-                    <p className="text-xs text-gray-500">Para el 16 de enero de 2025</p>
+                    <p className="font-semibold">${calculateServiceCost('fedex-express').toFixed(2)}</p>
+                    <p className="text-xs text-gray-600">{services['fedex-express'].days}</p>
+                    <p className="text-xs text-gray-500">{services['fedex-express'].deliveryDate}</p>
                   </div>
                 </div>
 
-                {selectedService === 'fedex-express' && (
+                {selectedService === 'fedex-express' && weightNum > 0 && (
                   <div className="mt-3 pt-3 border-t space-y-2 text-sm">
                     <h3 className="font-semibold mb-3">Desglose de costos</h3>
                     <div className="flex justify-between text-gray-700">
                       <span>Tarifa base de envío</span>
-                      <span>${services['fedex-express'].baseFee.toFixed(2)}</span>
+                      <span>$50.00</span>
                     </div>
+                    {weightSurcharge > 0 && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Recargo por peso</span>
+                        <span>${weightSurcharge.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Recargo por combustible</span>
-                      <span>${services['fedex-express'].fuelSurcharge.toFixed(2)}</span>
+                      <span>Seguro</span>
+                      <span>$15.00</span>
                     </div>
+                    {isFragile && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Manejo frágil</span>
+                        <span>$10.00</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Seguro (opcional)</span>
-                      <span>${services['fedex-express'].insurance.toFixed(2)}</span>
+                      <span>Velocidad urgente</span>
+                      <span>$30.00</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
-                      <span>${(services['fedex-express'].baseFee + services['fedex-express'].fuelSurcharge + services['fedex-express'].insurance).toFixed(2)}</span>
+                      <span>${calculateServiceCost('fedex-express').toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -270,30 +379,42 @@ const ShipmentCost = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">${(services['ups-ground'].baseFee + services['ups-ground'].fuelSurcharge + services['ups-ground'].insurance).toFixed(2)}</p>
-                    <p className="text-xs text-gray-600">4-6 Days</p>
-                    <p className="text-xs text-gray-500">Para el 18 de enero de 2025</p>
+                    <p className="font-semibold">${calculateServiceCost('ups-ground').toFixed(2)}</p>
+                    <p className="text-xs text-gray-600">{services['ups-ground'].days}</p>
+                    <p className="text-xs text-gray-500">{services['ups-ground'].deliveryDate}</p>
                   </div>
                 </div>
 
-                {selectedService === 'ups-ground' && (
+                {selectedService === 'ups-ground' && weightNum > 0 && (
                   <div className="mt-3 pt-3 border-t space-y-2 text-sm">
                     <h3 className="font-semibold mb-3">Desglose de costos</h3>
                     <div className="flex justify-between text-gray-700">
                       <span>Tarifa base de envío</span>
-                      <span>${services['ups-ground'].baseFee.toFixed(2)}</span>
+                      <span>$50.00</span>
                     </div>
+                    {weightSurcharge > 0 && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Recargo por peso</span>
+                        <span>${weightSurcharge.toFixed(2)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Recargo por combustible</span>
-                      <span>${services['ups-ground'].fuelSurcharge.toFixed(2)}</span>
+                      <span>Seguro</span>
+                      <span>$15.00</span>
                     </div>
+                    {isFragile && (
+                      <div className="flex justify-between text-gray-700">
+                        <span>Manejo frágil</span>
+                        <span>$10.00</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-gray-700">
-                      <span>Seguro (opcional)</span>
-                      <span>${services['ups-ground'].insurance.toFixed(2)}</span>
+                      <span>Velocidad express</span>
+                      <span>$20.00</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total</span>
-                      <span>${(services['ups-ground'].baseFee + services['ups-ground'].fuelSurcharge + services['ups-ground'].insurance).toFixed(2)}</span>
+                      <span>${calculateServiceCost('ups-ground').toFixed(2)}</span>
                     </div>
                   </div>
                 )}
