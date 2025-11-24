@@ -75,7 +75,7 @@ const NewShipment = () => {
       return;
     }
 
-    // Paso 2: Información del receptor
+    // Paso 2: Opciones de envío (Información del receptor)
     if (step === 2) {
       if (!receiverInfo.name || !receiverInfo.address || !receiverInfo.city) {
         toast({
@@ -89,14 +89,8 @@ const NewShipment = () => {
       return;
     }
 
-    // Paso 3: Opciones de envío
+    // Paso 3: Revisar y confirmar - Finalizar
     if (step === 3) {
-      setStep(4);
-      return;
-    }
-
-    // Paso 4: Revisar y confirmar - Finalizar
-    if (step === 4) {
       navigate("/shipment-cost", {
         state: { packageInfo, receiverInfo },
       });
@@ -112,8 +106,7 @@ const NewShipment = () => {
   const steps = [
     { number: 1, title: "Detalles del paquete", subtitle: "Información del paquete" },
     { number: 2, title: "Opciones de envío", subtitle: "Datos del destinatario" },
-    { number: 3, title: "Opciones de envío", subtitle: "Selecciona el servicio" },
-    { number: 4, title: "Revisar y confirmar", subtitle: "Confirmación final" },
+    { number: 3, title: "Revisar y confirmar", subtitle: "Confirmación final" },
   ];
 
   const estimate = calculateEstimate();
@@ -604,7 +597,7 @@ const NewShipment = () => {
                 onClick={handleNext}
                 className="ml-auto bg-[#2c5aa0] hover:bg-[#234a82]"
               >
-                {step === 4 ? "Calcular Costo" : "Siguiente"}
+                {step === 3 ? "Calcular Costo" : "Siguiente"}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
