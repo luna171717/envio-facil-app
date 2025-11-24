@@ -270,7 +270,7 @@ const Dashboard = () => {
             )}
 
             {!loading && recentShipments.length > 0 && totalPages > 1 && (
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+              <div className="flex flex-col items-center justify-center gap-3 mt-6 pt-4 border-t border-gray-200">
                 <div className="text-sm text-gray-600">
                   Página {currentPage} de {totalPages}
                 </div>
