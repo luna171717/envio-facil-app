@@ -22,7 +22,17 @@ const RateExperience = () => {
   const maxChars = 500;
 
   const handleRating = (category: keyof typeof ratings, value: number) => {
-    setRatings({ ...ratings, [category]: value });
+    if (category === "overall") {
+      // Si es la calificación general, aplicar a todos
+      setRatings({
+        overall: value,
+        speed: value,
+        communication: value,
+        packaging: value,
+      });
+    } else {
+      setRatings({ ...ratings, [category]: value });
+    }
   };
 
   const handleSubmit = () => {
