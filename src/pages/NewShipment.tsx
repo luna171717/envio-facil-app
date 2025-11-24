@@ -96,7 +96,7 @@ const NewShipment = () => {
 
     // Paso 3: Revisar y confirmar - Finalizar
     if (step === 3) {
-      navigate("/shipment-cost", {
+      navigate("/shipment-confirmed", {
         state: { packageInfo, receiverInfo },
       });
     }
