@@ -211,7 +211,12 @@ const ShipmentDetails = () => {
 
   return (
     <Layout title="Detalles del envío">
-      <div className="space-y-4">
+      {loading ? (
+        <div className="text-center py-8">Cargando...</div>
+      ) : !shipment ? (
+        <div className="text-center py-8">No se encontró el envío</div>
+      ) : (
+        <div className="space-y-4">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span className="cursor-pointer hover:text-blue-600" onClick={() => navigate("/dashboard")}>
