@@ -596,44 +596,62 @@ const NewShipment = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-3 text-gray-600">Envío estándar</td>
-                            <td className="py-3 text-center text-gray-600">1</td>
-                            <td className="py-3 text-right text-gray-600">$85.00</td>
-                            <td className="py-3 text-right text-gray-900 font-medium">$85.00</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-3 text-gray-600">Seguro de mercancía</td>
-                            <td className="py-3 text-center text-gray-600">1</td>
-                            <td className="py-3 text-right text-gray-600">$15.00</td>
-                            <td className="py-3 text-right text-gray-900 font-medium">$15.00</td>
-                          </tr>
-                          {packageInfo.fragile && (
-                            <tr className="border-b border-gray-100">
-                              <td className="py-3 text-gray-600">Manejo especial</td>
-                              <td className="py-3 text-center text-gray-600">1</td>
-                              <td className="py-3 text-right text-gray-600">$10.00</td>
-                              <td className="py-3 text-right text-gray-900 font-medium">$10.00</td>
-                            </tr>
-                          )}
-                          <tr className="border-b border-gray-100">
-                            <td className="py-3 text-gray-600 font-medium">Subtotal</td>
-                            <td className="py-3"></td>
-                            <td className="py-3"></td>
-                            <td className="py-3 text-right text-gray-900 font-medium">$110.00</td>
-                          </tr>
-                          <tr className="border-b border-gray-100">
-                            <td className="py-3 text-gray-600">IVA (16%)</td>
-                            <td className="py-3"></td>
-                            <td className="py-3"></td>
-                            <td className="py-3 text-right text-gray-900 font-medium">$17.60</td>
-                          </tr>
-                          <tr>
-                            <td className="py-3 text-gray-900 font-bold text-base">Total</td>
-                            <td className="py-3"></td>
-                            <td className="py-3"></td>
-                            <td className="py-3 text-right text-gray-900 font-bold text-base">${estimate}</td>
-                          </tr>
+                          {(() => {
+                            const weight = parseFloat(packageInfo.weight) || 0;
+                            const baseRate = 50;
+                            const WEIGHT_THRESHOLD = 15;
+                            const EXCESS_WEIGHT_RATE = 8.00;
+                            const weightCharge = weight > WEIGHT_THRESHOLD ? (weight - WEIGHT_THRESHOLD) * EXCESS_WEIGHT_RATE : 0;
+                            const shippingCost = baseRate + weightCharge;
+                            const insurance = 15.00;
+                            const fragileCharge = packageInfo.fragile ? 10.00 : 0;
+                            const subtotal = shippingCost + insurance + fragileCharge;
+                            const iva = subtotal * 0.16;
+                            const total = subtotal + iva;
+
+                            return (
+                              <>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-3 text-gray-600">Envío estándar</td>
+                                  <td className="py-3 text-center text-gray-600">1</td>
+                                  <td className="py-3 text-right text-gray-600">${shippingCost.toFixed(2)}</td>
+                                  <td className="py-3 text-right text-gray-900 font-medium">${shippingCost.toFixed(2)}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-3 text-gray-600">Seguro de mercancía</td>
+                                  <td className="py-3 text-center text-gray-600">1</td>
+                                  <td className="py-3 text-right text-gray-600">${insurance.toFixed(2)}</td>
+                                  <td className="py-3 text-right text-gray-900 font-medium">${insurance.toFixed(2)}</td>
+                                </tr>
+                                {packageInfo.fragile && (
+                                  <tr className="border-b border-gray-100">
+                                    <td className="py-3 text-gray-600">Manejo especial</td>
+                                    <td className="py-3 text-center text-gray-600">1</td>
+                                    <td className="py-3 text-right text-gray-600">${fragileCharge.toFixed(2)}</td>
+                                    <td className="py-3 text-right text-gray-900 font-medium">${fragileCharge.toFixed(2)}</td>
+                                  </tr>
+                                )}
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-3 text-gray-600 font-medium">Subtotal</td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3 text-right text-gray-900 font-medium">${subtotal.toFixed(2)}</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                  <td className="py-3 text-gray-600">IVA (16%)</td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3 text-right text-gray-900 font-medium">${iva.toFixed(2)}</td>
+                                </tr>
+                                <tr>
+                                  <td className="py-3 text-gray-900 font-bold text-base">Total</td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3"></td>
+                                  <td className="py-3 text-right text-gray-900 font-bold text-base">${total.toFixed(2)}</td>
+                                </tr>
+                              </>
+                            );
+                          })()}
                         </tbody>
                       </table>
                     </div>
