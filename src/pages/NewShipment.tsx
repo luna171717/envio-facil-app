@@ -55,7 +55,9 @@ const NewShipment = () => {
 
     if (length && width && height && weight) {
       const baseRate = 50;
-      const weightCharge = weight * 5;
+      const WEIGHT_THRESHOLD = 15; // kg
+      const EXCESS_WEIGHT_RATE = 8.00; // costo por cada kg adicional después de 15kg
+      const weightCharge = weight > WEIGHT_THRESHOLD ? (weight - WEIGHT_THRESHOLD) * EXCESS_WEIGHT_RATE : 0;
       const volumeCharge = (length * width * height) / 5000;
       const fragileCharge = packageInfo.fragile ? 15 : 0;
       return (baseRate + weightCharge + volumeCharge + fragileCharge).toFixed(2);
