@@ -54,8 +54,13 @@ const NewShipment = () => {
       const WEIGHT_THRESHOLD = 15; // kg
       const EXCESS_WEIGHT_RATE = 8.00; // costo por cada kg adicional después de 15kg
       const weightCharge = weight > WEIGHT_THRESHOLD ? (weight - WEIGHT_THRESHOLD) * EXCESS_WEIGHT_RATE : 0;
-      const fragileCharge = packageInfo.fragile ? 15 : 0;
-      return (baseRate + weightCharge + fragileCharge).toFixed(2);
+      const shippingCost = baseRate + weightCharge;
+      const insurance = 15.00;
+      const fragileCharge = packageInfo.fragile ? 10.00 : 0;
+      const subtotal = shippingCost + insurance + fragileCharge;
+      const iva = subtotal * 0.16;
+      const total = subtotal + iva;
+      return total.toFixed(2);
     }
     return "--";
   };
