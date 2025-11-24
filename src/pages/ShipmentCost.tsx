@@ -1,161 +1,216 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Package, Truck, Zap, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Truck, Check, Circle } from "lucide-react";
 import Layout from "@/components/Layout";
 
 const ShipmentCost = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { packageInfo, receiverInfo } = location.state || {};
+  const [origin, setOrigin] = useState("");
+  const [destination, setDestination] = useState("");
+  const [packageDetails, setPackageDetails] = useState("");
+  const [serviceType, setServiceType] = useState("");
 
   const services = [
     {
-      id: "fedex-standard",
-      carrier: "FedEx",
-      name: "Standard",
-      icon: Package,
-      time: "3-5 días hábiles",
-      price: 285,
-      features: ["Rastreo incluido", "Seguro básico", "Sin firma requerida"],
+      id: "fedex-ground",
+      name: "FedEx Ground",
+      subtitle: "Envío terrestre confiable",
+      days: "3-5 Days",
+      price: 24.99,
+      recommended: true,
+      deliveryDate: "Para el 18 de enero de 2025",
     },
     {
-      id: "ups-express",
-      carrier: "UPS",
-      name: "Express",
-      icon: Truck,
-      time: "1-2 días hábiles",
-      price: 420,
-      features: ["Rastreo en tiempo real", "Seguro completo", "Firma requerida"],
-      popular: true,
+      id: "fedex-express",
+      name: "FedEx Express",
+      subtitle: "Sugerida día hábil",
+      days: "1 Day",
+      price: 89.99,
+      deliveryDate: "Para el 16 de enero de 2025",
     },
     {
-      id: "dhl-priority",
-      carrier: "DHL",
-      name: "Priority Overnight",
-      icon: Zap,
-      time: "Entrega al día siguiente",
-      price: 650,
-      features: [
-        "Rastreo premium",
-        "Seguro extendido",
-        "Entrega garantizada",
-        "Manejo prioritario",
-      ],
+      id: "ups-ground",
+      name: "UPS Ground",
+      subtitle: "Entrega terrestre estándar",
+      days: "4-6 Days",
+      price: 22.50,
+      deliveryDate: "Para el 18 de enero de 2025",
     },
   ];
 
-  const handleSelectService = (service: typeof services[0]) => {
-    navigate("/confirm-shipment", {
-      state: {
-        packageInfo,
-        receiverInfo,
-        selectedService: service,
-      },
-    });
-  };
+  const baseFee = 19.99;
+  const fuelSurcharge = 2.50;
+  const insurance = 2.50;
+  const total = 24.99;
 
   return (
-    <Layout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Opciones de Envío</h1>
-          <p className="text-muted-foreground mt-1">
-            Selecciona el servicio que mejor se adapte a tus necesidades
-          </p>
-        </div>
-
-        <Card className="border-border">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold mb-4">Detalles del Envío</h2>
-            <div className="grid md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground mb-1">Origen</p>
-                <p className="font-medium">Tu dirección registrada</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">Destino</p>
-                <p className="font-medium">
-                  {receiverInfo?.city}, {receiverInfo?.state}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">Dimensiones</p>
-                <p className="font-medium">
-                  {packageInfo?.length} x {packageInfo?.width} x {packageInfo?.height} cm
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">Peso</p>
-                <p className="font-medium">{packageInfo?.weight} kg</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="grid gap-4">
-          {services.map((service) => (
-            <Card
-              key={service.id}
-              className={`border-border hover:shadow-lg transition-all cursor-pointer ${
-                service.popular ? "ring-2 ring-primary" : ""
-              }`}
-            >
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-3 rounded-xl">
-                      <service.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          {service.carrier} - {service.name}
-                        </h3>
-                        {service.popular && (
-                          <Badge variant="default" className="text-xs">
-                            Popular
-                          </Badge>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">{service.time}</p>
-                      <ul className="space-y-1">
-                        {service.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-sm">
-                            <Check className="h-4 w-4 text-success" />
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+    <Layout title="Presupuesto de coste y entrega">
+      <div className="max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Left Column - Shipment Summary */}
+          <div className="space-y-4">
+            <Card className="bg-blue-50">
+              <CardContent className="p-4">
+                <h2 className="font-semibold mb-4 text-blue-900">Shipment Summary</h2>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">Desde</label>
+                    <Input
+                      placeholder="Escribe el lugar de emisión"
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="bg-white"
+                    />
                   </div>
 
-                  <div className="flex flex-row md:flex-col items-center md:items-end gap-4">
-                    <div className="text-right">
-                      <p className="text-3xl font-bold text-foreground">
-                        ${service.price}
-                      </p>
-                      <p className="text-sm text-muted-foreground">MXN</p>
-                    </div>
-                    <Button
-                      onClick={() => handleSelectService(service)}
-                      className="w-full md:w-auto"
-                      variant={service.popular ? "default" : "outline"}
-                    >
-                      Seleccionar
-                    </Button>
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">Hasta</label>
+                    <Input
+                      placeholder="Escribe el lugar de destino"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="bg-white"
+                    />
                   </div>
                 </div>
               </CardContent>
             </Card>
-          ))}
-        </div>
 
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={() => navigate(-1)}>
-            Volver
-          </Button>
+            <Card className="bg-blue-50">
+              <CardContent className="p-4">
+                <h2 className="font-semibold mb-4 text-blue-900">Detalles de paquete</h2>
+                
+                <div>
+                  <label className="text-xs text-gray-600 block mb-1">Paquete</label>
+                  <Input
+                    placeholder="Escribe los detalles del paquete"
+                    value={packageDetails}
+                    onChange={(e) => setPackageDetails(e.target.value)}
+                    className="bg-white"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Service Type and Options */}
+          <div className="space-y-4">
+            <Card className="bg-blue-50">
+              <CardContent className="p-4">
+                <h2 className="font-semibold mb-4 text-blue-900">Tipo de servicio</h2>
+                
+                <Select value={serviceType} onValueChange={setServiceType}>
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="Selecciona el tipo de servicio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="standard">Estándar</SelectItem>
+                    <SelectItem value="express">Express</SelectItem>
+                    <SelectItem value="overnight">Nocturno</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Recommended Option */}
+                <div className="mt-4 bg-white rounded-lg p-4 border-2 border-orange-200">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Check className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded">
+                          RECOMENDADO
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Truck className="h-4 w-4 text-gray-600" />
+                        <span className="font-semibold text-sm">FedEx Ground</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-2">Envío terrestre confiable</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="font-semibold text-2xl">${total.toFixed(2)}</p>
+                      <p className="text-xs text-gray-600">Costo total</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold">3-5 Days</p>
+                      <p className="text-xs text-gray-600">Entrega estimada</p>
+                      <p className="text-xs text-gray-500">{services[0].deliveryDate}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cost Breakdown */}
+                <div className="mt-4 space-y-2 text-sm">
+                  <h3 className="font-semibold">Desglose de costos</h3>
+                  <div className="flex justify-between text-gray-700">
+                    <span>Tarifa base de envío</span>
+                    <span>${baseFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-700">
+                    <span>Recargo por combustible</span>
+                    <span>${fuelSurcharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-700">
+                    <span>Seguro (opcional)</span>
+                    <span>${insurance.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t pt-2 flex justify-between font-semibold">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                {/* Other Options */}
+                <div className="mt-6 space-y-2">
+                  <h3 className="font-semibold text-sm">Otras opciones disponibles</h3>
+                  
+                  {services.slice(1).map((service) => (
+                    <div key={service.id} className="bg-blue-100 rounded-lg p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Circle className="h-4 w-4 text-gray-400" />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <Truck className="h-3 w-3 text-gray-600" />
+                            <span className="font-medium text-sm">{service.name}</span>
+                          </div>
+                          <p className="text-xs text-gray-600">{service.subtitle}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-sm">${service.price.toFixed(2)}</p>
+                        <p className="text-xs text-gray-600">{service.days}</p>
+                        <p className="text-xs text-gray-500">{service.deliveryDate}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Create Order Button */}
+            <Button 
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              onClick={() => navigate("/new-shipment")}
+            >
+              <Check className="mr-2 h-4 w-4" />
+              Crear Pedido
+            </Button>
+          </div>
         </div>
       </div>
     </Layout>
