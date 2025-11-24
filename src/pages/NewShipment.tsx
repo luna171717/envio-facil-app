@@ -149,10 +149,9 @@ const NewShipment = () => {
           </div>
         </div>
 
-        <div className={`gap-6 ${step === 3 ? '' : 'grid lg:grid-cols-3'}`}>
-          {/* Form Content */}
-          {step !== 3 && (
-          <div className="lg:col-span-2">
+        <div className={`grid gap-6 ${step === 3 ? '' : 'lg:grid-cols-3'}`}>
+          {/* Left Column - Form */}
+          <div className={step === 3 ? '' : 'lg:col-span-2'}>
             <Card className="bg-white border-gray-200">
               <CardContent className="p-6">
                 {step === 1 && (
@@ -525,8 +524,7 @@ const NewShipment = () => {
                   </div>
                 )}
 
-
-                {step === 3 ? (
+                {step === 3 && (
                   <div className="space-y-6">
                     <div className="mb-6">
                       <h2 className="text-xl font-semibold text-gray-900 mb-1">Confirmación de Envío</h2>
@@ -729,7 +727,163 @@ const NewShipment = () => {
                       </div>
                     </div>
                   </div>
-                ) : null}
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="flex justify-between mt-6">
+              {step > 1 && (
+                <Button variant="ghost" onClick={handleBack} className="text-gray-600">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Atrás
+                </Button>
+              )}
+              <Button
+                onClick={handleNext}
+                className="ml-auto bg-[#2c5aa0] hover:bg-[#234a82]"
+              >
+                {step === 3 ? "Confirmar Envío" : "Siguiente"}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Right Column - Summary (hidden on step 3) */}
+          {step !== 3 && (
+          <div className="lg:col-span-1">
+            <Card className="bg-white border-gray-200 sticky top-6">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {step === 1 ? "Resumen de costos" : "Resumen de envío"}
+                </h3>
+
+                {step === 1 ? (
+                  <div className="space-y-4">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex flex-col items-center justify-center text-center min-h-[100px]">
+                      <Package className="h-8 w-8 text-orange-600 mb-2" />
+                      <p className="text-xs text-gray-600">
+                        Las dimensiones del paquete aparecerán aquí
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tarifa básica</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight ? "$50.00" : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Recargo por peso</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight
+                            ? parseFloat(packageInfo.weight) > 15
+                              ? `$${((parseFloat(packageInfo.weight) - 15) * 8).toFixed(2)}`
+                              : "$0.00"
+                            : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Manipulación de objetos frágiles</span>
+                        <span className="text-gray-900">
+                          {packageInfo.fragile ? "$15.00" : "--"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t-2 border-gray-200">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-gray-900">Total estimado:</span>
+                        <span className="text-xl font-bold text-gray-900">${estimate}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
+                      <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-amber-900 mb-1">
+                          Entrega estimada
+                        </p>
+                        <p className="text-xs text-amber-700">
+                          Consulta los detalles completos del paquete para ver la fecha estimada de
+                          entrega.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
+                      <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-blue-900 mb-1">
+                          ¿Necesitas ayuda con el embalaje?
+                        </p>
+                        <p className="text-xs text-blue-700">Ver guías de embalaje</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tipo de servicio</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.deliveryPreference === "express" 
+                            ? "Express" 
+                            : receiverInfo.deliveryPreference === "overnight"
+                            ? "Siguiente día"
+                            : "Estándar"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Peso estimado</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight ? `${packageInfo.weight} ${packageInfo.weightUnit}` : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Distancia</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.city ? "~850 km" : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tiempo de entrega</span>
+                        <span className="text-gray-900">
+                          {receiverInfo.deliveryPreference === "express" 
+                            ? "1-2 días" 
+                            : receiverInfo.deliveryPreference === "overnight"
+                            ? "1 día"
+                            : "3-5 días"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t-2 border-gray-200">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-gray-900">Costo estimado</span>
+                        <span className="text-xl font-bold text-gray-900">
+                          {packageInfo.weight && packageInfo.length ? `$${estimate}` : "--"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        El precio final se calcula al finalizar la compra.
+                      </p>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm font-medium text-blue-900 mb-2">
+                        ¿Necesitas ayuda?
+                      </p>
+                      <p className="text-xs text-blue-700 mb-3">
+                        Contacta con nuestros expertos en envíos para obtener ayuda
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full border-blue-300 text-blue-700 hover:bg-blue-100">
+                        📞 Llamar a experto
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
