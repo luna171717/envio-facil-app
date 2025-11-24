@@ -297,131 +297,207 @@ const NewShipment = () => {
 
                 {step === 2 && (
                   <div className="space-y-4">
-                    <h2 className="text-xl font-semibold mb-4">Información del Destinatario</h2>
+                    <div className="flex items-center gap-2 mb-6">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                        </svg>
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-900">Información del receptor</h2>
+                    </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Nombre completo</Label>
+                    <div>
+                      <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-2 block">
+                        Nombre completo
+                      </Label>
                       <Input
                         id="name"
-                        placeholder="Juan Pérez"
+                        placeholder="escribe el nombre completo"
                         value={receiverInfo.name}
                         onChange={(e) =>
                           setReceiverInfo({ ...receiverInfo, name: e.target.value })
                         }
+                        className="h-10"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Teléfono</Label>
+                      <div>
+                        <Label htmlFor="phone" className="text-sm font-medium text-gray-700 mb-2 block">
+                          Número de teléfono
+                        </Label>
                         <Input
                           id="phone"
                           type="tel"
-                          placeholder="55 1234 5678"
+                          placeholder="+1 (555) 123-4567"
                           value={receiverInfo.phone}
                           onChange={(e) =>
                             setReceiverInfo({ ...receiverInfo, phone: e.target.value })
                           }
+                          className="h-10"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Correo electrónico</Label>
+                      <div>
+                        <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">
+                          Correo electrónico
+                        </Label>
                         <Input
                           id="email"
                           type="email"
-                          placeholder="correo@ejemplo.com"
+                          placeholder="receptor@ejemplo.com"
                           value={receiverInfo.email}
                           onChange={(e) =>
                             setReceiverInfo({ ...receiverInfo, email: e.target.value })
                           }
+                          className="h-10"
                         />
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Dirección</Label>
+                    <div>
+                      <Label htmlFor="address" className="text-sm font-medium text-gray-700 mb-2 block">
+                        Dirección
+                      </Label>
                       <Input
                         id="address"
-                        placeholder="Calle, número, colonia"
+                        placeholder="123 Main Street, Apt 4B"
                         value={receiverInfo.address}
                         onChange={(e) =>
                           setReceiverInfo({ ...receiverInfo, address: e.target.value })
                         }
+                        className="h-10"
                       />
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="city">Ciudad</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="city" className="text-sm font-medium text-gray-700 mb-2 block">
+                          Ciudad
+                        </Label>
                         <Input
                           id="city"
-                          placeholder="Ciudad de México"
+                          placeholder="escribe la ciudad"
                           value={receiverInfo.city}
                           onChange={(e) =>
                             setReceiverInfo({ ...receiverInfo, city: e.target.value })
                           }
+                          className="h-10"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="state">Estado</Label>
-                        <Input
-                          id="state"
-                          placeholder="CDMX"
+                      <div>
+                        <Label htmlFor="state" className="text-sm font-medium text-gray-700 mb-2 block">
+                          Estado/Provincia
+                        </Label>
+                        <Select
                           value={receiverInfo.state}
-                          onChange={(e) =>
-                            setReceiverInfo({ ...receiverInfo, state: e.target.value })
+                          onValueChange={(value) =>
+                            setReceiverInfo({ ...receiverInfo, state: value })
                           }
-                        />
+                        >
+                          <SelectTrigger className="h-10 bg-white">
+                            <SelectValue placeholder="Seleccionar estado" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white z-50">
+                            <SelectItem value="CDMX">Ciudad de México</SelectItem>
+                            <SelectItem value="JAL">Jalisco</SelectItem>
+                            <SelectItem value="NL">Nuevo León</SelectItem>
+                            <SelectItem value="PUE">Puebla</SelectItem>
+                            <SelectItem value="QRO">Querétaro</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="zipCode">Código Postal</Label>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="zipCode" className="text-sm font-medium text-gray-700 mb-2 block">
+                          Código postal
+                        </Label>
                         <Input
                           id="zipCode"
-                          placeholder="01000"
+                          placeholder="12345"
                           value={receiverInfo.zipCode}
                           onChange={(e) =>
                             setReceiverInfo({ ...receiverInfo, zipCode: e.target.value })
                           }
+                          className="h-10"
                         />
+                      </div>
+                      <div>
+                        <Label htmlFor="country" className="text-sm font-medium text-gray-700 mb-2 block">
+                          País
+                        </Label>
+                        <Select defaultValue="MX">
+                          <SelectTrigger className="h-10 bg-white">
+                            <SelectValue placeholder="Seleccionar país" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white z-50">
+                            <SelectItem value="MX">México</SelectItem>
+                            <SelectItem value="US">Estados Unidos</SelectItem>
+                            <SelectItem value="CA">Canadá</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Preferencia de entrega</Label>
-                      <div className="space-y-2">
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="delivery"
-                            value="standard"
-                            checked={receiverInfo.deliveryPreference === "standard"}
-                            onChange={(e) =>
-                              setReceiverInfo({
-                                ...receiverInfo,
-                                deliveryPreference: e.target.value,
-                              })
-                            }
-                            className="text-primary"
-                          />
-                          <span className="text-sm">Entrega estándar (3-5 días)</span>
-                        </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="delivery"
-                            value="express"
-                            checked={receiverInfo.deliveryPreference === "express"}
-                            onChange={(e) =>
-                              setReceiverInfo({
-                                ...receiverInfo,
-                                deliveryPreference: e.target.value,
-                              })
-                            }
-                            className="text-primary"
-                          />
-                          <span className="text-sm">Entrega express (1-2 días)</span>
-                        </label>
+                    <div className="space-y-4 pt-4">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                        </svg>
+                        <h3 className="text-sm font-semibold text-gray-900">Preferencias de entrega</h3>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="deliverySpeed" className="text-xs text-gray-500 mb-1 block">
+                            Velocidad de entrega
+                          </Label>
+                          <Select
+                            value={receiverInfo.deliveryPreference}
+                            onValueChange={(value) =>
+                              setReceiverInfo({ ...receiverInfo, deliveryPreference: value })
+                            }
+                          >
+                            <SelectTrigger className="h-10 bg-white">
+                              <SelectValue placeholder="Selecciona la velocidad de entrega" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white z-50">
+                              <SelectItem value="standard">Estándar (3-5 días)</SelectItem>
+                              <SelectItem value="express">Express (1-2 días)</SelectItem>
+                              <SelectItem value="overnight">Siguiente día</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="deliveryTime" className="text-xs text-gray-500 mb-1 block">
+                            Hora de entrega preferida
+                          </Label>
+                          <Select defaultValue="anytime">
+                            <SelectTrigger className="h-10 bg-white">
+                              <SelectValue placeholder="En cualquier momento" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white z-50">
+                              <SelectItem value="anytime">En cualquier momento</SelectItem>
+                              <SelectItem value="morning">Mañana (8am-12pm)</SelectItem>
+                              <SelectItem value="afternoon">Tarde (12pm-6pm)</SelectItem>
+                              <SelectItem value="evening">Noche (6pm-9pm)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="instructions" className="text-sm font-medium text-gray-700 mb-2 block">
+                        Instrucciones especiales
+                      </Label>
+                      <Textarea
+                        id="instructions"
+                        placeholder="¿Alguna instrucción especial de entrega?"
+                        rows={3}
+                        className="resize-none"
+                      />
                     </div>
                   </div>
                 )}
@@ -510,75 +586,122 @@ const NewShipment = () => {
             </div>
           </div>
 
-          {/* Right Column - Cost Summary */}
+          {/* Right Column - Summary */}
           <div className="lg:col-span-1">
             <Card className="bg-white border-gray-200 sticky top-6">
               <CardContent className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Resumen de costos
+                  {step === 1 ? "Resumen de costos" : "Resumen de envío"}
                 </h3>
 
-                <div className="space-y-4">
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex flex-col items-center justify-center text-center min-h-[100px]">
-                    <Package className="h-8 w-8 text-orange-600 mb-2" />
-                    <p className="text-xs text-gray-600">
-                      Las dimensiones del paquete aparecerán aquí
-                    </p>
-                  </div>
-
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Tarifa básica</span>
-                      <span className="text-gray-900">
-                        {packageInfo.weight ? "$50.00" : "--"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Recargo por peso</span>
-                      <span className="text-gray-900">
-                        {packageInfo.weight
-                          ? `$${(parseFloat(packageInfo.weight) * 5).toFixed(2)}`
-                          : "--"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-100">
-                      <span className="text-gray-600">Manipulación de objetos frágiles</span>
-                      <span className="text-gray-900">
-                        {packageInfo.fragile ? "$15.00" : "--"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t-2 border-gray-200">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-900">Total estimado:</span>
-                      <span className="text-xl font-bold text-gray-900">${estimate}</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
-                    <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-medium text-amber-900 mb-1">
-                        Entrega estimada
-                      </p>
-                      <p className="text-xs text-amber-700">
-                        Consulta los detalles completos del paquete para ver la fecha estimada de
-                        entrega.
+                {step === 1 ? (
+                  <div className="space-y-4">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex flex-col items-center justify-center text-center min-h-[100px]">
+                      <Package className="h-8 w-8 text-orange-600 mb-2" />
+                      <p className="text-xs text-gray-600">
+                        Las dimensiones del paquete aparecerán aquí
                       </p>
                     </div>
-                  </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
-                    <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-medium text-blue-900 mb-1">
-                        ¿Necesitas ayuda con el embalaje?
-                      </p>
-                      <p className="text-xs text-blue-700">Ver guías de embalaje</p>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tarifa básica</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight ? "$50.00" : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Recargo por peso</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight
+                            ? `$${(parseFloat(packageInfo.weight) * 5).toFixed(2)}`
+                            : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Manipulación de objetos frágiles</span>
+                        <span className="text-gray-900">
+                          {packageInfo.fragile ? "$15.00" : "--"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t-2 border-gray-200">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-gray-900">Total estimado:</span>
+                        <span className="text-xl font-bold text-gray-900">${estimate}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex gap-2">
+                      <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-amber-900 mb-1">
+                          Entrega estimada
+                        </p>
+                        <p className="text-xs text-amber-700">
+                          Consulta los detalles completos del paquete para ver la fecha estimada de
+                          entrega.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-2">
+                      <HelpCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-medium text-blue-900 mb-1">
+                          ¿Necesitas ayuda con el embalaje?
+                        </p>
+                        <p className="text-xs text-blue-700">Ver guías de embalaje</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tipo de servicio</span>
+                        <span className="text-gray-900">No seleccionado</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Peso estimado</span>
+                        <span className="text-gray-900">
+                          {packageInfo.weight ? `${packageInfo.weight} ${packageInfo.weightUnit}` : "--"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Distancia</span>
+                        <span className="text-gray-900">--</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-100">
+                        <span className="text-gray-600">Tiempo de entrega</span>
+                        <span className="text-gray-900">--</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 border-t-2 border-gray-200">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-semibold text-gray-900">Costo estimado</span>
+                        <span className="text-xl font-bold text-gray-900">--</span>
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        El precio final se calcula al finalizar la compra.
+                      </p>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <p className="text-sm font-medium text-blue-900 mb-2">
+                        ¿Necesitas ayuda?
+                      </p>
+                      <p className="text-xs text-blue-700 mb-3">
+                        Contacta con nuestros expertos en envíos para obtener ayuda
+                      </p>
+                      <Button variant="outline" size="sm" className="w-full border-blue-300 text-blue-700 hover:bg-blue-100">
+                        📞 Llamar a experto
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
