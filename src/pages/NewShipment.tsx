@@ -149,9 +149,9 @@ const NewShipment = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${step === 3 ? '' : 'lg:grid-cols-3'}`}>
           {/* Left Column - Form */}
-          <div className="lg:col-span-2">
+          <div className={step === 3 ? '' : 'lg:col-span-2'}>
             <Card className="bg-white border-gray-200">
               <CardContent className="p-6">
                 {step === 1 && (
