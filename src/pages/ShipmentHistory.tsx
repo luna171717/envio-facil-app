@@ -30,10 +30,15 @@ const ShipmentHistory = () => {
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
 
+  // Efecto que carga los envíos al montar el componente
   useEffect(() => {
     fetchShipments();
   }, []);
 
+  /**
+   * Obtiene todos los envíos del usuario autenticado desde Supabase
+   * Los ordena por fecha de creación (más recientes primero)
+   */
   const fetchShipments = async () => {
     try {
       setLoading(true);
@@ -70,6 +75,10 @@ const ShipmentHistory = () => {
     }
   };
 
+  /**
+   * Genera y descarga un PDF con los detalles de un envío específico
+   * @param shipment - Objeto con toda la información del envío
+   */
   const handleDownloadPDF = (shipment: any) => {
     const doc = new jsPDF();
     
@@ -119,6 +128,9 @@ const ShipmentHistory = () => {
     doc.save(`Envio-${shipment.tracking_id}.pdf`);
   };
 
+  /**
+   * Restaura todos los filtros a sus valores por defecto
+   */
   const handleReset = () => {
     setSearchTerm("");
     setStatusFilter("all");
@@ -126,7 +138,11 @@ const ShipmentHistory = () => {
     setCurrentPage(1);
   };
 
-
+  /**
+   * Devuelve las clases CSS para colorear el badge según el estado del envío
+   * @param status - Estado del envío (Entregado, En tránsito, Aduanas, Pendiente)
+   * @returns String con las clases de Tailwind CSS
+   */
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       "Entregado": "bg-green-100 text-green-700",

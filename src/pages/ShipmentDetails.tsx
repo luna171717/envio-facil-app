@@ -24,10 +24,15 @@ const ShipmentDetails = () => {
   const [shipment, setShipment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Efecto que carga los detalles del envío cuando cambia el ID
   useEffect(() => {
     fetchShipmentDetails();
   }, [id]);
 
+  /**
+   * Obtiene los detalles completos de un envío desde Supabase
+   * Busca por tracking_id y muestra error si no se encuentra
+   */
   const fetchShipmentDetails = async () => {
     try {
       const { data, error } = await supabase
@@ -60,11 +65,17 @@ const ShipmentDetails = () => {
     }
   };
 
+  /**
+   * Navega a la página de confirmación de entrega
+   */
   const handleNotifyDelivery = () => {
     navigate(`/delivery/${id}`);
   };
 
-
+  /**
+   * Genera y descarga un PDF con la etiqueta completa del envío
+   * Incluye: tracking ID, estado, información del paquete, remitente y receptor
+   */
   const handleDownloadLabel = () => {
     if (!shipment) return;
 
@@ -171,6 +182,10 @@ const ShipmentDetails = () => {
     doc.save(`Etiqueta-${id}.pdf`);
   };
 
+  /**
+   * Imprime los detalles del envío
+   * Actualmente descarga el PDF (mismo comportamiento que descargar etiqueta)
+   */
   const handlePrint = () => {
     // Same as download - just download the PDF
     handleDownloadLabel();

@@ -15,6 +15,7 @@ const ShipmentConfirmed = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [trackingId, setTrackingId] = useState("");
 
+  // Efecto que verifica que exista información del envío y lo guarda en la base de datos
   useEffect(() => {
     if (!packageInfo || !receiverInfo) {
       toast({
@@ -29,6 +30,13 @@ const ShipmentConfirmed = () => {
     saveShipment();
   }, []);
 
+  /**
+   * Guarda el envío en la base de datos de Supabase
+   * - Genera un tracking ID único
+   * - Calcula todos los costos (base, peso, seguro, fragilidad, entrega, IVA)
+   * - Inserta el registro en la tabla 'shipments'
+   * - Muestra notificación de éxito o error
+   */
   const saveShipment = async () => {
     try {
       setIsSaving(true);
@@ -131,6 +139,10 @@ const ShipmentConfirmed = () => {
   const estimatedDate = new Date();
   estimatedDate.setDate(estimatedDate.getDate() + 3);
 
+  /**
+   * Genera y descarga un PDF con toda la información del envío
+   * Incluye: tracking ID, información del envío, destinatario y detalles del paquete
+   */
   const generatePDF = () => {
     const doc = new jsPDF();
     

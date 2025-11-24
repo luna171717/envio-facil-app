@@ -55,10 +55,17 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 5;
 
+  // Efecto que se ejecuta al cargar el componente o cambiar de página
+  // Llama a la función para obtener los datos del dashboard
   useEffect(() => {
     fetchDashboardData();
   }, [currentPage]);
 
+  /**
+   * Obtiene los datos del dashboard desde Supabase
+   * - Métricas globales (total envíos, en tránsito, pendientes, entregados)
+   * - Lista de envíos recientes del usuario con paginación
+   */
   const fetchDashboardData = async () => {
     try {
       // Obtener métricas globales
