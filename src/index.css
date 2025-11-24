@@ -87,3 +87,69 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for shipment details */
+@media print {
+  /* Hide navigation, sidebar, and UI elements */
+  nav,
+  aside,
+  .sidebar,
+  [data-sidebar],
+  header button,
+  button:not(.print-include),
+  .no-print {
+    display: none !important;
+  }
+
+  /* Hide action buttons */
+  button {
+    display: none !important;
+  }
+
+  /* Reset page margins and padding */
+  @page {
+    margin: 1cm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure cards and content are visible */
+  .bg-blue-100,
+  .bg-blue-50 {
+    background: #f0f4ff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Make text readable */
+  * {
+    color: black !important;
+  }
+
+  .text-gray-600,
+  .text-gray-700 {
+    color: #4b5563 !important;
+  }
+
+  /* Ensure status badges print with colors */
+  .bg-orange-100,
+  .bg-green-100 {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
+  }
+
+  /* Remove shadows and borders that don't print well */
+  .shadow,
+  .shadow-lg,
+  .shadow-md {
+    box-shadow: none !important;
+  }
+}
