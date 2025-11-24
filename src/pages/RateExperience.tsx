@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star } from "lucide-react";
 import Layout from "@/components/Layout";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const RateExperience = () => {
   const navigate = useNavigate();
@@ -35,15 +36,32 @@ const RateExperience = () => {
     }
   };
 
-  const handleSkip = () => {
-    toast({
-      title: "Calificación omitida",
-      description: "Puedes calificar tu experiencia en cualquier momento desde el historial",
-    });
-    navigate("/dashboard");
+  const handleSkip = async () => {
+    try {
+      // Actualizar el estado del envío a "Entregado"
+      const { error } = await supabase
+        .from('shipments')
+        .update({ status: 'Entregado' })
+        .eq('tracking_id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Calificación omitida",
+        description: "Puedes calificar tu experiencia en cualquier momento desde el historial",
+      });
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error('Error updating shipment status:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado del envío",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (ratings.overall === 0) {
       toast({
         title: "Calificación requerida",
@@ -53,12 +71,29 @@ const RateExperience = () => {
       return;
     }
 
-    toast({
-      title: "¡Gracias por tu feedback!",
-      description: "Tu calificación nos ayuda a mejorar nuestro servicio",
-    });
+    try {
+      // Actualizar el estado del envío a "Entregado"
+      const { error } = await supabase
+        .from('shipments')
+        .update({ status: 'Entregado' })
+        .eq('tracking_id', id);
 
-    navigate("/dashboard");
+      if (error) throw error;
+
+      toast({
+        title: "¡Gracias por tu feedback!",
+        description: "Tu calificación nos ayuda a mejorar nuestro servicio",
+      });
+
+      navigate("/dashboard");
+    } catch (error: any) {
+      console.error('Error updating shipment status:', error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estado del envío",
+        variant: "destructive",
+      });
+    }
   };
 
   const RatingStars = ({
