@@ -157,7 +157,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_global_shipment_metrics: {
+        Args: never
+        Returns: {
+          delivered: number
+          in_transit: number
+          pending: number
+          total_shipments: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
