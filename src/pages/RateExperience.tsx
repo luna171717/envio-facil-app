@@ -35,6 +35,14 @@ const RateExperience = () => {
     }
   };
 
+  const handleSkip = () => {
+    toast({
+      title: "Calificación omitida",
+      description: "Puedes calificar tu experiencia en cualquier momento desde el historial",
+    });
+    navigate("/dashboard");
+  };
+
   const handleSubmit = () => {
     if (ratings.overall === 0) {
       toast({
@@ -171,7 +179,7 @@ const RateExperience = () => {
             <div className="flex gap-3 mb-4">
               <Button
                 variant="outline"
-                onClick={() => navigate("/dashboard")}
+                onClick={handleSkip}
                 className="flex-1 bg-white"
               >
                 Omitir por ahora
