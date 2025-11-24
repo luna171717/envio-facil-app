@@ -101,7 +101,11 @@ const Dashboard = () => {
             <Plus className="mr-2 h-4 w-4" />
             Nuevo envío
           </Button>
-          <Button variant="outline" className="border-gray-300">
+          <Button 
+            variant="outline" 
+            className="border-gray-300"
+            onClick={() => navigate("/shipment-cost")}
+          >
             <Calculator className="mr-2 h-4 w-4" />
             Calcular costo
           </Button>
