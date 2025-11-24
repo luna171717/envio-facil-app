@@ -152,7 +152,7 @@ const NewShipment = () => {
         <div className={`grid gap-6 ${step === 3 ? '' : 'lg:grid-cols-3'}`}>
           {/* Left Column - Form */}
           <div className={step === 3 ? '' : 'lg:col-span-2'}>
-            <Card className="bg-white border-gray-200">
+            <Card className="bg-[#fafafa] border-none shadow-none">
               <CardContent className="p-6">
                 {step === 1 && (
                   <div className="space-y-6">
