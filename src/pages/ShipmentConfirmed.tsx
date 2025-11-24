@@ -69,7 +69,7 @@ const ShipmentConfirmed = () => {
       let deliveryCost = 10.00; // standard
       if (receiverInfo.deliveryPreference === 'express') {
         deliveryCost = 20.00;
-      } else if (receiverInfo.deliveryPreference === 'overnight') {
+      } else if (receiverInfo.deliveryPreference === 'next-day') {
         deliveryCost = 30.00;
       }
 
@@ -178,7 +178,7 @@ const ShipmentConfirmed = () => {
         ['Origen', 'Madrid, España'],
         ['Destino', `${receiverInfo?.city || ''}, ${receiverInfo?.state || ''}`],
         ['Fecha estimada', estimatedDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })],
-        ['Servicio', receiverInfo?.deliveryPreference === 'express' ? 'Envío Express' : receiverInfo?.deliveryPreference === 'overnight' ? 'Envío Nocturno' : 'Envío Estándar'],
+        ['Servicio', receiverInfo?.deliveryPreference === 'express' ? 'Envío Express' : receiverInfo?.deliveryPreference === 'next-day' ? 'Envío Siguiente Día' : 'Envío Estándar'],
       ],
       theme: 'striped',
       headStyles: { fillColor: [44, 90, 160] },
@@ -314,8 +314,8 @@ const ShipmentConfirmed = () => {
               <p className="text-sm font-medium text-gray-900">
                 {receiverInfo?.deliveryPreference === 'express' 
                   ? 'Envío Express' 
-                  : receiverInfo?.deliveryPreference === 'overnight'
-                  ? 'Envío Nocturno'
+                  : receiverInfo?.deliveryPreference === 'next-day'
+                  ? 'Envío Siguiente Día'
                   : 'Envío Estándar'}
               </p>
             </div>
