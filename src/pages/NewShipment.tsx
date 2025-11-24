@@ -540,7 +540,12 @@ const NewShipment = () => {
                         <div className="bg-white border border-gray-200 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h3 className="font-semibold text-gray-900">Resumen del Envío</h3>
-                            <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-700">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-blue-600 hover:text-blue-700"
+                              onClick={() => setStep(1)}
+                            >
                               Editar
                             </Button>
                           </div>
