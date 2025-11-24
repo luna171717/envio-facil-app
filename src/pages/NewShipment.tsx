@@ -50,13 +50,13 @@ const NewShipment = () => {
    * Calcula el costo de entrega según la preferencia seleccionada
    * - Standard: $10.00
    * - Express: $20.00
-   * - Overnight: $30.00
+   * - Next Day (Siguiente día): $30.00
    */
   const getDeliveryCost = () => {
     switch (receiverInfo.deliveryPreference) {
       case "express":
         return 20.00;
-      case "overnight":
+      case "next-day":
         return 30.00;
       default: // standard
         return 10.00;
@@ -513,7 +513,7 @@ const NewShipment = () => {
                             <SelectContent className="bg-white z-50">
                               <SelectItem value="standard">Estándar (3-5 días) - $10.00</SelectItem>
                               <SelectItem value="express">Express (1-2 días) - $20.00</SelectItem>
-                              <SelectItem value="overnight">Siguiente día - $30.00</SelectItem>
+                              <SelectItem value="next-day">Siguiente día - $30.00</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -901,7 +901,7 @@ const NewShipment = () => {
                         <span className="text-gray-900">
                           {receiverInfo.deliveryPreference === "express" 
                             ? "Express" 
-                            : receiverInfo.deliveryPreference === "overnight"
+                            : receiverInfo.deliveryPreference === "next-day"
                             ? "Siguiente día"
                             : "Estándar"}
                         </span>
@@ -923,7 +923,7 @@ const NewShipment = () => {
                         <span className="text-gray-900">
                           {receiverInfo.deliveryPreference === "express" 
                             ? "1-2 días" 
-                            : receiverInfo.deliveryPreference === "overnight"
+                            : receiverInfo.deliveryPreference === "next-day"
                             ? "1 día"
                             : "3-5 días"}
                         </span>
